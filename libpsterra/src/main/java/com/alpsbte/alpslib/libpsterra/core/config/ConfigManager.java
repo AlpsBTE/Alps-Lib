@@ -1,5 +1,6 @@
 package com.alpsbte.alpslib.libpsterra.core.config;
 
+import com.alpsbte.alpslib.libpsterra.utils.Utils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
@@ -26,14 +27,18 @@ public class ConfigManager {
     private final List<Config> configs;
     private final String schematicsPath;
 
-    public ConfigManager(Plugin plugin) throws ConfigNotImplementedException {
+    private boolean consoleOutput = true;
+
+    public ConfigManager(Plugin plugin, boolean consoleOutput) throws ConfigNotImplementedException {
+        this.consoleOutput = consoleOutput;
+
         String absolutePluginDataPath = plugin.getDataFolder().getAbsolutePath();
         String fileName = "config.yml";
         
         InputStream defaultConfigResource =
             plugin.getResource("default" + fileName.substring(0, 1).toUpperCase() + fileName.substring(1));
         //create/init config list
-        configs = Collections.singletonList(
+        this.configs = Collections.singletonList(
                 new Config(fileName, absolutePluginDataPath, defaultConfigResource)
         );
 
@@ -46,13 +51,12 @@ public class ConfigManager {
 
 
         // Create schematics directory if not exists
-        schematicsPath = Paths.get(absolutePluginDataPath, "schematics") + File.separator;
+        this.schematicsPath = Paths.get(absolutePluginDataPath, "schematics") + File.separator;
     
 
         try {
-            if (!Files.isDirectory(Paths.get(schematicsPath))) {
-                Files.createDirectories(Paths.get(schematicsPath));
-            }
+            if (!Files.isDirectory(Paths.get(this.schematicsPath)))
+                Files.createDirectories(Paths.get(this.schematicsPath));
         } catch (IOException ex) {
             Bukkit.getLogger().log(Level.WARNING, "Could not create schematics directory!");
         }
@@ -122,7 +126,7 @@ public class ConfigManager {
                 lineNumber++;
 
                 if (line.contains("\t")) {
-                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Tab found in file \"" + config.getFile().getAbsolutePath() + "\" on line #" + lineNumber + "!");
+                    Utils.sendConsoleMessage(ChatColor.RED + "Tab found in file \"" + config.getFile().getAbsolutePath() + "\" on line #" + lineNumber + "!", consoleOutput);
                     throw new IllegalArgumentException("Tab found in file \"" + config.getFile().getAbsolutePath() + "\" on line # " + line + "!");
                 }
             }
@@ -193,10 +197,10 @@ public class ConfigManager {
 
             defaultFileLines.set(getIndex("config-version", defaultFileLines), "config-version: " + Config.VERSION);
             Files.write(config.getFile().toPath(), defaultFileLines);
-            Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Updated " + config.getFileName() + " to version " + Config.VERSION + ".");
+            Utils.sendConsoleMessage(ChatColor.YELLOW + "Updated " + config.getFileName() + " to version " + Config.VERSION + ".", consoleOutput);
             return true;
         } catch (IOException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, "An error occurred while updating config file!", ex);
+            Utils.sendConsoleError("An error occurred while updating config file!", ex, consoleOutput);
         }
         return false;
     }

@@ -3,6 +3,7 @@ package com.alpsbte.alpslib.libpsterra.core.plotsystem;
 import com.alpsbte.alpslib.libpsterra.core.Connection;
 import com.alpsbte.alpslib.libpsterra.core.config.ConfigPaths;
 import com.alpsbte.alpslib.libpsterra.utils.FTPManager;
+import com.alpsbte.alpslib.libpsterra.utils.Utils;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
@@ -36,9 +37,12 @@ public class PlotPaster extends Thread {
     private Connection connection;
     private final String schematicsPath;
 
-    public PlotPaster(Plugin plugin, FileConfiguration config, Connection connection) {
+    private boolean consoleOutput;
+
+    public PlotPaster(Plugin plugin, FileConfiguration config, Connection connection, boolean consoleOutput) {
         this.plugin = plugin;
         this.connection = connection;
+        this.consoleOutput = consoleOutput;
 
         this.serverName = config.getString(ConfigPaths.SERVER_NAME);
         this.fastMode = config.getBoolean(ConfigPaths.FAST_MODE);
@@ -75,7 +79,7 @@ public class PlotPaster extends Thread {
                         }//endif city is on this server
                         
                     } catch (Exception ex) {
-                        Bukkit.getLogger().log(Level.SEVERE, "An error occurred while pasting plot #" + plotID + "!", ex);
+                        Utils.sendConsoleError("An error occurred while pasting plot #" + plotID + "!", ex, consoleOutput);
                     }
 
                 }//endfor plots
@@ -84,9 +88,9 @@ public class PlotPaster extends Thread {
                     Bukkit.broadcastMessage("§7§l>§a Pasted §6" + pastedPlots + " §aplot" + (pastedPlots > 1 ? "s" : "") + "!");
                 }
 
-        } catch (Exception ex) {
-            Bukkit.getLogger().log(Level.SEVERE, "An error occurred while getting unpasted plots!", ex);
-        }
+            } catch (Exception ex) {
+                    Utils.sendConsoleError( "An error occurred while getting unpasted plots!", ex, consoleOutput);
+            }
         }, 0L, 20L * pasteInterval);
     }
 
