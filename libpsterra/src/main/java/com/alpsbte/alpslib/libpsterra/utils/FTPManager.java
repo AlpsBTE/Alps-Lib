@@ -147,11 +147,11 @@ public class FTPManager {
         
     }
 
-    public static void testSFTPConnection_VFS2(Connection connection) throws Exception {
+    public static void testSFTPConnection_VFS2(Connection connection, boolean consoleOutput) throws Exception {
         //get ftpconfig from first country/server associated with the buildteam/apikey
         List<Country> teamCountries = connection.getTeamCountries();
         if (teamCountries.isEmpty()){
-            System.out.println("Cannot test FTP config - no countries/servers associated with API key");
+            Utils.sendConsoleMessage("Cannot test FTP config - no countries/servers associated with API key", consoleOutput);
             return;
         }
 
@@ -162,7 +162,7 @@ public class FTPManager {
 
         FTPConfiguration ftpConfiguration = connection.getFTPConfiguration(server.ftp_configuration_id);
 
-        System.out.println("Testing VFS2 sftp connect connect to " + ftpConfiguration.address + " with user " + ftpConfiguration.username);
+        Utils.sendConsoleMessage("Testing VFS2 sftp connect connect to " + ftpConfiguration.address + " with user " + ftpConfiguration.username, consoleOutput);
         
 
         fileManager.init();
@@ -194,7 +194,7 @@ public class FTPManager {
         //     content = content.concat(String.valueOf(c));
         // }
         fileManager.close();
-        System.out.println("FTP testfile exists: " +Boolean.toString(remote.exists()));
+        Utils.sendConsoleMessage("FTP testfile exists: " +Boolean.toString(remote.exists()), consoleOutput);
         
         
     }
