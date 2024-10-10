@@ -29,10 +29,13 @@ public class ConfigManager {
 
     private boolean consoleOutput = true;
 
-    public ConfigManager(Plugin plugin, boolean consoleOutput) throws ConfigNotImplementedException {
+    public ConfigManager(Plugin plugin, boolean consoleOutput, String configPath) throws ConfigNotImplementedException {
         this.consoleOutput = consoleOutput;
 
         String absolutePluginDataPath = plugin.getDataFolder().getAbsolutePath();
+        if(configPath != null)
+            absolutePluginDataPath = absolutePluginDataPath + configPath;
+
         String fileName = "config.yml";
         
         InputStream defaultConfigResource =

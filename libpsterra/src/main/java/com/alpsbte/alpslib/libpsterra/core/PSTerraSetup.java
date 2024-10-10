@@ -29,17 +29,26 @@ public class PSTerraSetup {
     public ConfigManager configManager;
 
     /**
-     * creates/instantiates all the neccessary classes and event listeners required for plugin operation
-     * @param plugin
-     * @throws Exception
+     * creates/instantiates all the necessary classes and event listeners required for plugin operation
+     *
+     * @param plugin The plugin instance
+     * @throws Exception If an error occurs during setup
      */
     public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version) throws Exception{
-        return setupPlugin(plugin, version, true);
+        return setupPlugin(plugin, version, true, null);
     }
-    public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version, boolean consoleOutput) throws Exception{
-        PSTerraSetup result = new PSTerraSetup();
 
-        
+    /**
+     * creates/instantiates all the necessary classes and event listeners required for plugin operation
+     *
+     * @param plugin The plugin instance
+     * @param version The version of the plugin
+     * @param consoleOutput If console output should be enabled
+     * @param configPath The path to the config file (null if default)
+     * @throws Exception If an error occurs during setup
+     */
+    public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version, boolean consoleOutput, String configPath) throws Exception{
+        PSTerraSetup result = new PSTerraSetup();
 
         String successPrefix = ChatColor.DARK_GRAY + "[" + ChatColor.DARK_GREEN + "✔" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY;
         String errorPrefix = ChatColor.DARK_GRAY + "[" + ChatColor.RED + "X" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY;
@@ -59,7 +68,7 @@ public class PSTerraSetup {
         Utils.sendConsoleMessage(successPrefix + "Successfully loaded required dependencies.", consoleOutput);
 
         // Load config
-        result.configManager = new ConfigManager(plugin, consoleOutput);
+        result.configManager = new ConfigManager(plugin, consoleOutput, configPath);
         Utils.sendConsoleMessage(successPrefix + "Successfully loaded configuration file.", consoleOutput);
         result.configManager.reloadConfigs();
         FileConfiguration configFile = result.configManager.getConfig();
