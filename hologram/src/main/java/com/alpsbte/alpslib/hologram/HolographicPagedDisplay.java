@@ -24,7 +24,7 @@
 
 package com.alpsbte.alpslib.hologram;
 
-import me.filoghost.holographicdisplays.api.Position;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -42,11 +42,11 @@ public abstract class HolographicPagedDisplay extends HolographicDisplay {
     private int changeState = 0;
     private long changeDelay = 0;
     private final Plugin plugin;
-    private static String contentSeparator = "§7---------------";
+    private static final String contentSeparator = "§7---------------";
     protected boolean automaticallySkipPage = true;
 
-    public HolographicPagedDisplay(@NotNull String id, Position position, boolean enablePlaceholders, @NotNull Plugin plugin) {
-        super(id, position, enablePlaceholders);
+    protected HolographicPagedDisplay(@NotNull String id, Location location, boolean enablePlaceholders, @NotNull Plugin plugin) {
+        super(id, location, enablePlaceholders);
         this.plugin = plugin;
     }
 

@@ -24,40 +24,39 @@
 
 package com.alpsbte.alpslib.hologram;
 
-import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
-import me.filoghost.holographicdisplays.api.Position;
-import me.filoghost.holographicdisplays.api.hologram.Hologram;
-import me.filoghost.holographicdisplays.api.hologram.PlaceholderSetting;
-import me.filoghost.holographicdisplays.api.hologram.VisibilitySettings;
-import me.filoghost.holographicdisplays.api.hologram.line.HologramLine;
-import me.filoghost.holographicdisplays.api.hologram.line.ItemHologramLine;
-import me.filoghost.holographicdisplays.api.hologram.line.TextHologramLine;
+import eu.decentsoftware.holograms.api.DHAPI;
+import eu.decentsoftware.holograms.api.holograms.Hologram;
+import eu.decentsoftware.holograms.api.holograms.HologramLine;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public abstract class HolographicDisplay implements HolographicContent {
-    public static List<HolographicDisplay> activeDisplays = new ArrayList<>();
-    public static HolographicDisplaysAPI hologramAPI;
+    public static final List<HolographicDisplay> activeDisplays = new ArrayList<>();
 
     public static void registerPlugin(Plugin plugin) {
-        hologramAPI = HolographicDisplaysAPI.get(plugin);
         plugin.getServer().getPluginManager().registerEvents(new HolographicEventListener(), plugin);
     }
 
     public static final String EMPTY_TAG = "{empty}";
 
     private final String id;
-    private Position position;
+    private Location position;
     private final boolean isPlaceholdersEnabled;
 
-    protected final HashMap<UUID, Hologram> holograms = new HashMap<>();
+    protected final HashMap<UUID, String> holograms = new HashMap<>();
 
-    public HolographicDisplay(@NotNull String id, Position position, boolean enablePlaceholders) {
+    protected HolographicDisplay(@NotNull String id, Location position, boolean enablePlaceholders) {
         this.id = id;
         this.position = position;
         this.isPlaceholdersEnabled = enablePlaceholders;
@@ -71,11 +70,12 @@ public abstract class HolographicDisplay implements HolographicContent {
             return;
         }
 
-        Hologram hologram = hologramAPI.createHologram(position);
-        hologram.getVisibilitySettings().setGlobalVisibility(VisibilitySettings.Visibility.HIDDEN);
-        hologram.getVisibilitySettings().setIndividualVisibility(player, VisibilitySettings.Visibility.VISIBLE);
-        if (isPlaceholdersEnabled) hologram.setPlaceholderSetting(PlaceholderSetting.ENABLE_ALL);
-        holograms.put(player.getUniqueId(), hologram);
+        DHAPI.createHologram(id, position);
+        Hologram hologram = DHAPI.getHologram(id);
+        assert hologram != null;
+        hologram.setDefaultVisibleState(false);
+        hologram.setShowPlayer(player);
+        holograms.put(player.getUniqueId(), id);
         reload(player.getUniqueId());
     }
 
@@ -113,7 +113,7 @@ public abstract class HolographicDisplay implements HolographicContent {
     }
 
     public void remove(UUID playerUUID) {
-        if (holograms.containsKey(playerUUID)) holograms.get(playerUUID).delete();
+        if (holograms.containsKey(playerUUID)) Objects.requireNonNull(DHAPI.getHologram(holograms.get(playerUUID))).delete();
         holograms.remove(playerUUID);
     }
 
@@ -132,24 +132,24 @@ public abstract class HolographicDisplay implements HolographicContent {
         return id;
     }
 
-    public Position getPosition() {
+    public Location getPosition() {
         return position;
     }
 
-    public void setPosition(Position newPosition) {
+    public void setPosition(Location newPosition) {
         this.position = newPosition;
-        for (UUID playerUUID : holograms.keySet()) holograms.get(playerUUID).setPosition(newPosition);
+        for (Map.Entry<UUID, String> hologram : holograms.entrySet()) Objects.requireNonNull(DHAPI.getHologram(hologram.getValue())).setLocation(newPosition);
     }
 
     public boolean isPlaceholdersEnabled() {
         return isPlaceholdersEnabled;
     }
 
-    public Hologram getHologram(UUID playerUUID) {
+    public String getHologramName(UUID playerUUID) {
         return holograms.get(playerUUID);
     }
 
-    public HashMap<UUID, Hologram> getHolograms() {
+    public HashMap<UUID, String> getHolograms() {
         return holograms;
     }
 
@@ -157,50 +157,42 @@ public abstract class HolographicDisplay implements HolographicContent {
         T getLine();
     }
 
-    protected static void updateDataLines(Hologram hologram, int startIndex, List<DataLine<?>> dataLines) {
+    protected static void updateDataLines(String hologramName, int startIndex, List<DataLine<?>> dataLines) {
         int index = startIndex;
-
-        if (index == 0 && hologram.getLines().size() > dataLines.size()) {
-            int removeCount = hologram.getLines().size() - dataLines.size();
+        List<HologramLine> lines = DHAPI.getHologram(hologramName).getPage(0).getLines();
+        if (index == 0 && lines.size() > dataLines.size()) {
+            int removeCount = lines.size() - dataLines.size();
             for (int i = 0; i < removeCount; i++) {
-                int lineIndex = hologram.getLines().size() - 1;
-                if (lineIndex >= 0) hologram.getLines().remove(lineIndex);
+                int lineIndex = lines.size() - 1;
+                if (lineIndex >= 0) lines.remove(lineIndex);
             }
         }
 
         for (DataLine<?> data : dataLines) {
-            if (data instanceof TextLine) replaceLine(hologram, index, ((TextLine) data).getLine());
-            else if (data instanceof ItemLine) replaceLine(hologram, index, ((ItemLine) data).getLine());
+            replaceLine(hologramName, index, data);
             index++;
         }
     }
 
-    protected static void replaceLine(Hologram hologram, int line, ItemStack item) {
-        if (hologram.getLines().size() < line + 1) {
-            hologram.getLines().insertItem(line, item);
-        } else {
-            HologramLine hologramLine = hologram.getLines().get(line);
-            if (hologramLine instanceof TextHologramLine) {
-                // we're replacing the line with a different type, so we will have to destroy old line to replace with new type
-                hologram.getLines().insertItem(line, item);
-                hologram.getLines().remove(line + 1);
-            } else {
-                ((ItemHologramLine) hologramLine).setItemStack(item);
-            }
-        }
-    }
+    protected static void replaceLine(String hologramName, int line, DataLine<?> data) {
+        Hologram hologram = DHAPI.getHologram(hologramName);
+        List<HologramLine> lines = hologram.getPage(0).getLines();
+        
+        boolean isText = data instanceof TextLine;
+        boolean isItem = data instanceof ItemLine;
+        
 
-    protected static void replaceLine(Hologram hologram, int line, String text) {
-        if (hologram.getLines().size() < line + 1) {
-            hologram.getLines().insertText(line, text);
+        if (lines.size() < line + 1) {
+            if (isText) {
+                DHAPI.insertHologramLine(hologram, line, ((TextLine) data).getLine());
+            } else if (isItem) {
+                DHAPI.insertHologramLine(hologram, line, ((ItemLine) data).getLine());
+            }
         } else {
-            HologramLine hologramLine = hologram.getLines().get(line);
-            if (hologramLine instanceof ItemHologramLine) {
-                // we're replacing the line with a different type, so we will have to destroy old line to replace with a new type
-                hologram.getLines().insertText(line, text);
-                hologram.getLines().remove(line + 1);
-            } else {
-                ((TextHologramLine) hologramLine).setText(text);
+            if (isText) {
+                DHAPI.setHologramLine(hologram, line, ((TextLine) data).getLine());
+            } else if (isItem) {
+                DHAPI.setHologramLine(hologram, line, ((ItemLine) data).getLine());
             }
         }
     }
