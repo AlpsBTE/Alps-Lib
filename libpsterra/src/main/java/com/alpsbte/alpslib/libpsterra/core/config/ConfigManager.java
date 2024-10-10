@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import com.alpsbte.alpslib.io.config.ConfigNotImplementedException;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +30,7 @@ public class ConfigManager {
 
     private boolean consoleOutput = true;
 
-    public ConfigManager(Plugin plugin, boolean consoleOutput, String configPath) throws ConfigNotImplementedException {
+    public ConfigManager(Plugin plugin, boolean consoleOutput, @Nullable String configPath, @Nullable String configFileName) throws ConfigNotImplementedException {
         this.consoleOutput = consoleOutput;
 
         String absolutePluginDataPath = plugin.getDataFolder().getAbsolutePath();
@@ -37,6 +38,8 @@ public class ConfigManager {
             absolutePluginDataPath = absolutePluginDataPath + configPath;
 
         String fileName = "config.yml";
+        if(configFileName != null)
+            fileName = configFileName;
         
         InputStream defaultConfigResource =
             plugin.getResource("default" + fileName.substring(0, 1).toUpperCase() + fileName.substring(1));

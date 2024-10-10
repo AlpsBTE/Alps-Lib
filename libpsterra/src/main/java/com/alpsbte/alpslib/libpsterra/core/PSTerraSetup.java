@@ -21,6 +21,7 @@ import com.alpsbte.alpslib.libpsterra.core.plotsystem.PlotPaster;
 import com.alpsbte.alpslib.libpsterra.utils.FTPManager;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import org.jetbrains.annotations.Nullable;
 
 public class PSTerraSetup {
     public PlotCreator plotCreator;
@@ -35,7 +36,7 @@ public class PSTerraSetup {
      * @throws Exception If an error occurs during setup
      */
     public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version) throws Exception{
-        return setupPlugin(plugin, version, true, null);
+        return setupPlugin(plugin, version, true, null, null);
     }
 
     /**
@@ -45,9 +46,10 @@ public class PSTerraSetup {
      * @param version The version of the plugin
      * @param consoleOutput If console output should be enabled
      * @param configPath The path to the config file (null if default)
+     * @param configFileName The name of the config file (null if default)
      * @throws Exception If an error occurs during setup
      */
-    public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version, boolean consoleOutput, String configPath) throws Exception{
+    public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version, boolean consoleOutput, @Nullable String configPath, @Nullable String configFileName) throws Exception{
         PSTerraSetup result = new PSTerraSetup();
 
         String successPrefix = ChatColor.DARK_GRAY + "[" + ChatColor.DARK_GREEN + "✔" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY;
@@ -68,7 +70,7 @@ public class PSTerraSetup {
         Utils.sendConsoleMessage(successPrefix + "Successfully loaded required dependencies.", consoleOutput);
 
         // Load config
-        result.configManager = new ConfigManager(plugin, consoleOutput, configPath);
+        result.configManager = new ConfigManager(plugin, consoleOutput, configPath, configFileName);
         Utils.sendConsoleMessage(successPrefix + "Successfully loaded configuration file.", consoleOutput);
         result.configManager.reloadConfigs();
         FileConfiguration configFile = result.configManager.getConfig();
