@@ -30,7 +30,7 @@ public class ConfigManager {
 
     private boolean consoleOutput = true;
 
-    public ConfigManager(Plugin plugin, boolean consoleOutput, @Nullable String configPath, @Nullable String configFileName) throws ConfigNotImplementedException {
+    public ConfigManager(Plugin plugin, boolean consoleOutput, @Nullable String configPath, @Nullable String configFileName, @Nullable String defaultConfigFileName) throws ConfigNotImplementedException {
         this.consoleOutput = consoleOutput;
 
         String absolutePluginDataPath = plugin.getDataFolder().getAbsolutePath();
@@ -40,9 +40,13 @@ public class ConfigManager {
         String fileName = "config.yml";
         if(configFileName != null)
             fileName = configFileName;
+
+        String defaultFileName = "default" + fileName.substring(0, 1).toUpperCase() + fileName.substring(1);
+        if(defaultConfigFileName != null)
+            defaultFileName = defaultConfigFileName;
         
         InputStream defaultConfigResource =
-            plugin.getResource("default" + fileName.substring(0, 1).toUpperCase() + fileName.substring(1));
+            plugin.getResource(defaultFileName);
         //create/init config list
         this.configs = Collections.singletonList(
                 new Config(fileName, absolutePluginDataPath, defaultConfigResource)

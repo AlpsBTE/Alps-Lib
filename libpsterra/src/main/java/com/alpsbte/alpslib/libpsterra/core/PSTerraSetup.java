@@ -36,7 +36,7 @@ public class PSTerraSetup {
      * @throws Exception If an error occurs during setup
      */
     public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version) throws Exception{
-        return setupPlugin(plugin, version, true, null, null);
+        return setupPlugin(plugin, version, true, null, null, null);
     }
 
     /**
@@ -47,9 +47,12 @@ public class PSTerraSetup {
      * @param consoleOutput If console output should be enabled
      * @param configPath The path to the config file (null if default)
      * @param configFileName The name of the config file (null if default)
+     * @param defaultConfigFileName The name of the default config file (null if default)
      * @throws Exception If an error occurs during setup
      */
-    public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version, boolean consoleOutput, @Nullable String configPath, @Nullable String configFileName) throws Exception{
+    public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version, boolean consoleOutput,
+                                           @Nullable String configPath, @Nullable String configFileName, @Nullable String defaultConfigFileName) throws Exception{
+
         PSTerraSetup result = new PSTerraSetup();
 
         String successPrefix = ChatColor.DARK_GRAY + "[" + ChatColor.DARK_GREEN + "✔" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY;
@@ -70,7 +73,7 @@ public class PSTerraSetup {
         Utils.sendConsoleMessage(successPrefix + "Successfully loaded required dependencies.", consoleOutput);
 
         // Load config
-        result.configManager = new ConfigManager(plugin, consoleOutput, configPath, configFileName);
+        result.configManager = new ConfigManager(plugin, consoleOutput, configPath, configFileName, defaultConfigFileName);
         Utils.sendConsoleMessage(successPrefix + "Successfully loaded configuration file.", consoleOutput);
         result.configManager.reloadConfigs();
         FileConfiguration configFile = result.configManager.getConfig();
