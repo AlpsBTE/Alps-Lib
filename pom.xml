@@ -51,6 +51,13 @@
     </build>
 
     <properties>
-        <kotlin.version>1.6.0</kotlin.version>
+        <kotlin.version>2.0.20</kotlin.version>
     </properties>
+    <repositories>
+        <repository>
+            <id>maven_central</id>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+    </repositories>
 </project>

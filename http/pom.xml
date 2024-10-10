@@ -81,7 +81,14 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
 
-        <junit.jupiter.version>5.8.1</junit.jupiter.version>
-        <kotlin.version>1.6.0</kotlin.version>
+        <junit.jupiter.version>5.10.3</junit.jupiter.version>
+        <kotlin.version>1.9.24</kotlin.version>
     </properties>
+    <repositories>
+        <repository>
+            <id>maven_central</id>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+    </repositories>
 </project>
