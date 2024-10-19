@@ -30,8 +30,11 @@ public class ConfigManager {
 
     private boolean consoleOutput = true;
 
-    public ConfigManager(Plugin plugin, boolean consoleOutput, @Nullable String configPath, @Nullable String configFileName, @Nullable String defaultConfigFileName) throws ConfigNotImplementedException {
-        this.consoleOutput = consoleOutput;
+    public ConfigManager(Plugin plugin, PSInitializer psInitializer) throws ConfigNotImplementedException {
+        this.consoleOutput = psInitializer.isConsoleOutput();
+        String configPath = psInitializer.getConfigPath();
+        String configFileName = psInitializer.getConfigFileName();
+        String defaultConfigFileName = psInitializer.getDefaultConfigFileName();
 
         String absolutePluginDataPath = plugin.getDataFolder().getAbsolutePath();
         if(configPath != null)
@@ -46,18 +49,15 @@ public class ConfigManager {
             defaultFileName = defaultConfigFileName;
         
         InputStream defaultConfigResource =
-            plugin.getResource(defaultFileName);
+            plugin.getResource(Paths.get(configPath, defaultFileName).toString().replace(File.separator, "/"));
         //create/init config list
         this.configs = Collections.singletonList(
                 new Config(fileName, absolutePluginDataPath, defaultConfigResource)
         );
 
 
-        if (!getConfig().getFile().exists()) {
-            if (this.createConfig(getConfig())) {
-                throw new ConfigNotImplementedException("The config file must be configured!");
-            }
-        }
+        if (!getConfig().getFile().exists() && this.createConfig(getConfig()) && psInitializer.isConfigMustBeConfigured())
+            throw new ConfigNotImplementedException("The config file must be configured!");
 
 
         // Create schematics directory if not exists

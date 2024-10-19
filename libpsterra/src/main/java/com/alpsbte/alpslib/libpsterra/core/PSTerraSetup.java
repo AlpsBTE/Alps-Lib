@@ -3,6 +3,7 @@ package com.alpsbte.alpslib.libpsterra.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alpsbte.alpslib.libpsterra.core.config.PSInitializer;
 import com.alpsbte.alpslib.libpsterra.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,7 +22,6 @@ import com.alpsbte.alpslib.libpsterra.core.plotsystem.PlotPaster;
 import com.alpsbte.alpslib.libpsterra.utils.FTPManager;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import org.jetbrains.annotations.Nullable;
 
 public class PSTerraSetup {
     public PlotCreator plotCreator;
@@ -36,7 +36,7 @@ public class PSTerraSetup {
      * @throws Exception If an error occurs during setup
      */
     public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version) throws Exception{
-        return setupPlugin(plugin, version, true, null, null, null);
+        return setupPlugin(plugin, version, new PSInitializer());
     }
 
     /**
@@ -44,14 +44,11 @@ public class PSTerraSetup {
      *
      * @param plugin The plugin instance
      * @param version The version of the plugin
-     * @param consoleOutput If console output should be enabled
-     * @param configPath The path to the config file (null if default)
-     * @param configFileName The name of the config file (null if default)
-     * @param defaultConfigFileName The name of the default config file (null if default)
+     * @param psInitializer The plugin initializer that can be used by other plugins to initialize the plugin
      * @throws Exception If an error occurs during setup
      */
-    public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version, boolean consoleOutput,
-                                           @Nullable String configPath, @Nullable String configFileName, @Nullable String defaultConfigFileName) throws Exception{
+    public static PSTerraSetup setupPlugin(JavaPlugin plugin, String version, PSInitializer psInitializer) throws Exception{
+        boolean consoleOutput = psInitializer.isConsoleOutput();
 
         PSTerraSetup result = new PSTerraSetup();
 
@@ -73,7 +70,7 @@ public class PSTerraSetup {
         Utils.sendConsoleMessage(successPrefix + "Successfully loaded required dependencies.", consoleOutput);
 
         // Load config
-        result.configManager = new ConfigManager(plugin, consoleOutput, configPath, configFileName, defaultConfigFileName);
+        result.configManager = new ConfigManager(plugin, psInitializer);
         Utils.sendConsoleMessage(successPrefix + "Successfully loaded configuration file.", consoleOutput);
         result.configManager.reloadConfigs();
         FileConfiguration configFile = result.configManager.getConfig();
@@ -93,15 +90,11 @@ public class PSTerraSetup {
             result.connection = new DatabaseConnection(URL, name, username, password, teamApiKey);// DatabaseConnection.InitializeDatabase();
             Utils.sendConsoleMessage(successPrefix + "Successfully initialized database connection.", consoleOutput);
         }else{
-            String teamApiKey = configFile.getString(ConfigPaths.API_KEY);
-            String apiHost = configFile.getString(ConfigPaths.API_URL);
-            
-            int apiPort = configFile.getInt(ConfigPaths.API_KEY);
+            String teamApiKey = psInitializer.isDefaultInitializer() ? configFile.getString(ConfigPaths.API_KEY) : psInitializer.getAPIKey();
+            String apiHost = psInitializer.isDefaultInitializer() ? configFile.getString(ConfigPaths.API_URL) : psInitializer.getAPIHost();
+            int apiPort = psInitializer.isDefaultInitializer() ? configFile.getInt(ConfigPaths.API_PORT) : psInitializer.getAPIPort();
 
             result.connection = new NetworkAPIConnection(apiHost, apiPort, teamApiKey);
-            // String name = configFile.getString(ConfigPaths.DATABASE_NAME);
-            // String username = configFile.getString(ConfigPaths.DATABASE_USERNAME);
-            // String password = configFile.getString(ConfigPaths.DATABASE_PASSWORD);
             Utils.sendConsoleMessage(successPrefix + "Successfully initialized API connection.", consoleOutput);
         }
         if (result.connection == null)
