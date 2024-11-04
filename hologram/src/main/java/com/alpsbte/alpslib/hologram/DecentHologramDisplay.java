@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- *  Copyright © 2023, Alps BTE <bte.atchli@gmail.com>
+ *  Copyright © 2024, Alps BTE <bte.atchli@gmail.com>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ package com.alpsbte.alpslib.hologram;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +37,6 @@ import eu.decentsoftware.holograms.api.holograms.HologramLine;
 import eu.decentsoftware.holograms.api.holograms.HologramPage;
 import eu.decentsoftware.holograms.event.HologramClickEvent;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -52,12 +50,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class DecentHologramDisplay implements DecentHologramContent {
     public static List<DecentHologramDisplay> activeDisplays = new ArrayList<>();
+
     protected final HashMap<UUID, Hologram> holograms = new HashMap<>();
-    public static final String contentSeparator = "§7---------------";
     private ClickAction clickListener;
     private final String id;
     private Location location;
     private boolean isEnabled;
+
+    private static Plugin plugin;
 
     /**
      * Click action which is executed when the player clicks on the hologram on the hologram.
@@ -69,16 +69,18 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * Register hologram listener as DecentHologramListener Class.
-     * @see DecentHologramDisplay#registerPlugin(Plugin)
+     *
      * @param plugin Plugin in use of this library.
+     * @see DecentHologramDisplay#registerPlugin(Plugin)
      */
     public static void registerPlugin(Plugin plugin) {
+        DecentHologramDisplay.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(new DecentHologramListener(), plugin);
     }
 
     /**
-     * @param id Hologram identifier for creating DecentHologram name, this will later be concatenated as "${player.uuid}-${id}"
-     * @param location The location in a world to create hologram.
+     * @param id        Hologram identifier for creating DecentHologram name, this will later be concatenated as "${player.uuid}-${id}"
+     * @param location  The location in a world to create hologram.
      * @param isEnabled Force enable or disable this hologram on create, this will not register new hologram in the hashmap.
      */
     public DecentHologramDisplay(@NotNull String id, Location location, boolean isEnabled) {
@@ -92,14 +94,15 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
      * Create hologram for player to see.
      * If the player has correct ViewPermission and hologram is configured enabled,
      * the hologram will be created
+     *
      * @param player The player that will be able to view this hologram
      */
     public void create(Player player) {
-        if(!isEnabled | !this.hasViewPermission(player.getUniqueId())) return;
+        if (!isEnabled | !this.hasViewPermission(player.getUniqueId())) return;
         if (this.holograms.containsKey(player.getUniqueId())) {
             this.reload(player.getUniqueId());
         } else {
-            Hologram hologram = DHAPI.createHologram(player.getUniqueId() + "-" + id, location);
+            Hologram hologram = DHAPI.createHologram(player.getUniqueId() + "-" + id, location, false);
 
             // Exclude all player to view this then allow only player to see
             hologram.setDefaultVisibleState(false);
@@ -112,6 +115,7 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * Abstract method to add functionality to whether a player creating this hologram can view it or not.
+     *
      * @param playerUUID Focused player.
      * @return If true, the hologram will be created for player. Else not.
      */
@@ -119,6 +123,7 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * Check if a player can view this hologram.
+     *
      * @param playerUUID Focused player.
      * @return True if hologram is visible to player.
      */
@@ -127,15 +132,16 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
     }
 
     public List<DataLine<?>> getHeader(UUID playerUUID) {
-        return Arrays.asList(new ItemLine(this.getItem()), new TextLine(this.getTitle(playerUUID)), new TextLine(contentSeparator));
+        return Arrays.asList(new ItemLine(this.getItem()), new TextLine(this.getTitle(playerUUID)));
     }
 
     public List<DataLine<?>> getFooter(UUID playerUUID) {
-        return Collections.singletonList(new TextLine(contentSeparator));
+        return new ArrayList<>();
     }
 
     /**
      * Re-Write hologram dataLines received by getHeader(), getContent() and getFooter() in order.
+     *
      * @param playerUUID Focused player.
      */
     public void reload(UUID playerUUID) {
@@ -163,6 +169,7 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * Remove a hologram assigned to this display from player access.
+     *
      * @param playerUUID Focused player.
      */
     public void remove(UUID playerUUID) {
@@ -194,6 +201,7 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * Get the identifier from when this hologram is first constructed.
+     *
      * @return ID as String.
      */
     public String getId() {
@@ -202,19 +210,25 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * Get the hologram location.
+     *
      * @return hologram location.
      */
     public Location getLocation() {
         return this.location;
     }
+
     public void setLocation(Location newPosition) {
         this.location = newPosition;
-        for (UUID playerUUID : holograms.keySet()) holograms.get(playerUUID).setLocation(newPosition);
-
+        for (UUID playerUUID : holograms.keySet()) {
+            Hologram holo = holograms.get(playerUUID);
+            holo.setLocation(newPosition);
+            holo.realignLines();
+        }
     }
 
     /**
      * Is this hologram enabled.
+     *
      * @return Is enabled.
      */
     public boolean isEnabled() {
@@ -223,12 +237,14 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * Force set the hologram enabled or disabled.
+     *
      * @param isEnabled If false, the hologram will not be created in any way.
      */
-    public void setEnabled(boolean isEnabled) { this.isEnabled = isEnabled; }
+    public void setEnabled(boolean isEnabled) {this.isEnabled = isEnabled;}
 
     /**
      * Get hologram instance mapped in this display.
+     *
      * @param playerUUID Focused player.
      * @return Hologram object from DecentHologram plugin.
      */
@@ -238,6 +254,7 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * Get all the mapped hologram in this display.
+     *
      * @return HashMap of Hologram by a player UUID.
      */
     public HashMap<UUID, Hologram> getHolograms() {
@@ -246,8 +263,8 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * Write a hologram page by any DataLine of type
-     * @param page The hologram page to write
-     * @param startIndex Start line to update
+     *
+     * @param page      The hologram page to write
      * @param dataLines The data item to be write on the page
      */
     protected static void updateDataLines(HologramPage page, int startIndex, List<DataLine<?>> dataLines) {
@@ -255,7 +272,7 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
         if (index == 0 && page.getLines().size() > dataLines.size()) {
             int removeCount = page.getLines().size() - dataLines.size();
 
-            for(int i = 0; i < removeCount; ++i) {
+            for (int i = 0; i < removeCount; ++i) {
                 int lineIndex = page.getLines().size() - 1;
                 if (lineIndex >= 0) {
                     DHAPI.removeHologramLine(page, lineIndex);
@@ -272,40 +289,33 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
     }
 
     /**
-     * Write an index line of a hologram page
-     * @param page The hologram page to write
-     * @param line The index line to write to
-     * @param item any minecraft item as an ItemStack to be inserted
+     * Replaces or adds a line to a hologram page with the specified content.
+     * If the line index exists, it replaces the existing line; otherwise, it adds a new line.
+     *
+     * @param page    The hologram page to modify.
+     * @param line    The index of the line to replace or add.
+     * @param content The content to set at the line, either an {@link ItemStack} or {@link String}.
      */
-    protected static void replaceLine(HologramPage page, int line, ItemStack item) {
+    protected static void replaceLine(HologramPage page, int line, Object content) {
         try {
             if (page.getLines().size() < line + 1) {
-                DHAPI.addHologramLine(page, item);
+                // Add new line with the content
+                if (content instanceof ItemStack) {
+                    DHAPI.addHologramLine(page, (ItemStack) content);
+                } else if (content instanceof String) {
+                    DHAPI.addHologramLine(page, (String) content);
+                }
             } else {
+                // Replace existing line with the content
                 HologramLine hologramLine = page.getLines().get(line);
-                DHAPI.setHologramLine(hologramLine,  item);
+                if (content instanceof ItemStack) {
+                    DHAPI.setHologramLine(hologramLine, (ItemStack) content);
+                } else if (content instanceof String) {
+                    DHAPI.setHologramLine(hologramLine, (String) content);
+                }
             }
         } catch (IllegalArgumentException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, "[DHAPI] Trying to set invalid HologramLine ", ex);
-        }
-    }
-
-    /**
-     * Write an index line of a hologram page
-     * @param page The hologram page to write
-     * @param line The index line to write to
-     * @param text The text to be written on
-     */
-    protected static void replaceLine(HologramPage page, int line, String text) {
-        try {
-            if (page.getLines().size() < line + 1) {
-                DHAPI.addHologramLine(page, text);
-            } else {
-                HologramLine hologramLine = page.getLines().get(line);
-                DHAPI.setHologramLine(hologramLine, text);
-            }
-        } catch (IllegalArgumentException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, "[DHAPI] Trying to set invalid HologramLine", ex);
+            plugin.getLogger().log(Level.SEVERE, "Trying to set invalid HologramLine", ex);
         }
     }
 
@@ -319,17 +329,20 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
      *     super.setClickListener((clickEvent) -> {});
      * }}
      * </pre>
+     *
      * @param clickListener Action callback.
      */
     public void setClickListener(@Nullable ClickAction clickListener) {
         this.clickListener = clickListener;
     }
+
     public @Nullable ClickAction getClickListener() {
         return this.clickListener;
     }
 
     /**
      * Get activeDisplays in DecentHologramDisplay by ID
+     *
      * @param id The id first used to construct a new DecentHologramDisplay
      * @return The hologram assigned to id.
      */
@@ -339,9 +352,12 @@ public abstract class DecentHologramDisplay implements DecentHologramContent {
 
     /**
      * DataLine of any type, acts as a text lines per hologram page.
+     *
      * @param <T> DataLine type, this can only be ItemStack as ItemLine or String as TextLine
      */
-    public interface DataLine<T> { T getLine(); }
+    public interface DataLine<T> {
+        T getLine();
+    }
 
     /**
      * Minecraft ItemStack as DataLine

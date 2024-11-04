@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- *  Copyright © 2023, Alps BTE <bte.atchli@gmail.com>
+ *  Copyright © 2024, Alps BTE <bte.atchli@gmail.com>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,7 @@ import java.util.Objects;
  * [2] Delete displays when a player quit.<br/>
  * [3] Re-create and delete displays when a player changes world.<br/>
  * [4] HologramClickEvent callback to any registered hologram.<br/>
+ *
  * @see PlayerJoinEvent
  * @see PlayerQuitEvent
  * @see PlayerChangedWorldEvent
@@ -55,7 +56,6 @@ public class DecentHologramListener implements Listener {
             if (Objects.requireNonNull(display.getLocation().getWorld()).getName().equals(event.getPlayer().getWorld().getName()))
                 display.create(event.getPlayer());
         }
-
     }
 
     @EventHandler
@@ -86,4 +86,3 @@ public class DecentHologramListener implements Listener {
         }
     }
 }
-
