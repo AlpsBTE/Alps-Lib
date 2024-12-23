@@ -70,9 +70,9 @@ public class LegacyItemBuilder {
 
     public LegacyItemBuilder setEnchantment(boolean setEnchanted) {
         if(setEnchanted) {
-            itemMeta.addEnchant(Enchantment.ARROW_DAMAGE,1,true);
+            itemMeta.addEnchant(Enchantment.UNBREAKING,1,true);
         } else {
-            itemMeta.removeEnchant(Enchantment.ARROW_DAMAGE);
+            itemMeta.removeEnchant(Enchantment.UNBREAKING);
         }
         return this;
     }

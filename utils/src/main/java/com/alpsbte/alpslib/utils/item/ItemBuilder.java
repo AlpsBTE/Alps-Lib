@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- *  Copyright © 2023, Alps BTE <bte.atchli@gmail.com>
+ *  Copyright © 2025, Alps BTE <bte.atchli@gmail.com>
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 
 package com.alpsbte.alpslib.utils.item;
 
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -68,36 +68,31 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setName(Component component) {
+    public ItemBuilder setName(TextComponent component) {
         itemMeta.displayName(LORE_COMPONENT.append(component));
         return this;
     }
 
     @Deprecated
     public ItemBuilder setLore(List<String> lore) {
-        List<Component> components = new ArrayList<>();
-        for (String loreStr : lore) {
+        List<TextComponent> components = new ArrayList<>();
+        for (String loreStr : lore)
             components.add(LORE_COMPONENT.append(LegacyComponentSerializer.legacySection().deserialize(loreStr)));
-        }
         itemMeta.lore(components);
         return this;
     }
 
-    public ItemBuilder setLore(ArrayList<Component> components) {
-        List<Component> componentList = new ArrayList<>();
-        for (Component comp : components) {
-            componentList.add(LORE_COMPONENT.append(comp));
-        }
-        itemMeta.lore(componentList);
+    public ItemBuilder setLore(ArrayList<TextComponent> components) {
+        itemMeta.lore(components);
         return this;
     }
 
     public ItemBuilder setEnchanted(boolean setEnchanted) {
         if(setEnchanted) {
-            itemMeta.addEnchant(Enchantment.ARROW_DAMAGE,1,true);
+            itemMeta.addEnchant(Enchantment.UNBREAKING,1,true);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         } else {
-            itemMeta.removeEnchant(Enchantment.ARROW_DAMAGE);
+            itemMeta.removeEnchant(Enchantment.UNBREAKING);
             itemMeta.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
         return this;
