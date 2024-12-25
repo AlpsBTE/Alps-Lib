@@ -26,8 +26,7 @@ package com.alpsbte.alpslib.utils.item;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -112,10 +111,22 @@ public class ItemBuilder {
 
     public ItemBuilder setItemModel(String model) {
         CustomModelDataComponent modelDataComp = itemMeta.getCustomModelDataComponent();
-        List<String> strings = new ArrayList<String>();
+        List<String> strings = new ArrayList<>();
         strings.add(model);
         modelDataComp.setStrings(strings);
         itemMeta.setCustomModelDataComponent(modelDataComp);
+        return this;
+    }
+
+    /**
+     * @param model The model to set, must be a int or string else nothing will be changed.
+     */
+    public ItemBuilder setItemModel(Object model) {
+        if (model instanceof Integer modelInt) {
+            setItemModel(modelInt);
+        } else if (model instanceof String modelString) {
+            setItemModel(modelString);
+        }
         return this;
     }
 
