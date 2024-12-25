@@ -83,7 +83,7 @@ public class YamlFile extends YamlConfiguration {
     }
 
     public InputStream getDefaultFileStream() {
-        return YamlFileFactory.yamlPlugin.getResource(filePath.toString());
+        return YamlFileFactory.yamlPlugin.getResource(filePath.toString().replace(File.separator, "/"));
     }
 
     public double getVersion() {

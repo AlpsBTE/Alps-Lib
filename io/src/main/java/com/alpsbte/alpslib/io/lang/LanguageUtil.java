@@ -31,6 +31,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -143,7 +144,8 @@ public class LanguageUtil extends YamlFileFactory {
 
         @Override
         public InputStream getDefaultFileStream() {
-            return YamlFileFactory.yamlPlugin.getResource("lang/" + getFile().getName());
+            return YamlFileFactory.yamlPlugin.getResource(Paths.get("lang", getFile().getName()).toString()
+                    .replace(File.separator, "/"));
         }
 
         @Override
