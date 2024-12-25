@@ -27,10 +27,12 @@ package com.alpsbte.alpslib.utils.item;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +107,15 @@ public class ItemBuilder {
 
     public ItemBuilder setItemModel(int model) {
         itemMeta.setCustomModelData(model);
+        return this;
+    }
+
+    public ItemBuilder setItemModel(String model) {
+        CustomModelDataComponent modelDataComp = itemMeta.getCustomModelDataComponent();
+        List<String> strings = new ArrayList<String>();
+        strings.add(model);
+        modelDataComp.setStrings(strings);
+        itemMeta.setCustomModelDataComponent(modelDataComp);
         return this;
     }
 
