@@ -35,6 +35,7 @@ import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.alpsbte.alpslib.utils.item.LoreBuilder.LORE_COMPONENT;
 
@@ -100,11 +101,13 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setItemModel(int model) {
-        itemMeta.setCustomModelData(model);
+        if (model != 0) itemMeta.setCustomModelData(model);
         return this;
     }
 
     public ItemBuilder setItemModel(String model) {
+        if (Objects.equals(model, "")) return this;
+
         CustomModelDataComponent modelDataComp = itemMeta.getCustomModelDataComponent();
         List<String> strings = new ArrayList<>();
         strings.add(model);
