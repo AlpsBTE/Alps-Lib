@@ -24,6 +24,7 @@
 
 package com.alpsbte.alpslib.utils.item;
 
+import com.alpsbte.alpslib.utils.AlpsUtils;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.*;
@@ -120,8 +121,9 @@ public class ItemBuilder {
      * @param model The model to set, must be a int or string else nothing will be changed.
      */
     public ItemBuilder setItemModel(Object model) {
+
         if (model instanceof Integer modelInt) {
-            setItemModel(modelInt);
+            setItemModel((int)modelInt);
         } else if (model instanceof String modelString) {
             setItemModel(modelString);
         }
