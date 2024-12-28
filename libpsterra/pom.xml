@@ -25,15 +25,10 @@
             <url>https://mvn.alps-bte.com/repository/alps-bte/</url>
         </repository>
 
+        <!-- Paper & Bukkit -->
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
-        </repository>
-
-        <!-- Spigot & Bukkit -->
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         
         <!-- JitPack -->
@@ -41,8 +36,25 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+
+        <!-- WorldEdit -->
+        <repository>
+            <id>enginehub-maven</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
     </repositories>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.intellectualsites.bom</groupId>
+                <artifactId>bom-newest</artifactId> <!--  Ref: https://github.com/IntellectualSites/bom -->
+                <version>1.50</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <!-- utils from AlpsLib for item/lorebuilder + general utils -->
         <dependency>
@@ -58,21 +70,22 @@
             <version>1.1.0</version>
         </dependency>
 
-<!-- Spigot -->
+        <!-- Paper -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- World Edit -->
+        <!-- World Edit-->
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
             <artifactId>worldedit-bukkit</artifactId>
-            <version>6.1.9</version>
+            <version>7.2.9</version>
             <scope>provided</scope>
         </dependency>
+
 
         <!-- Canvas Menu Builder -->
         <dependency>
@@ -155,10 +168,11 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- OkHttp (HTTP Client) -->
         <dependency>
-            <groupId>org.apache.httpcomponents.client5</groupId>
-            <artifactId>httpclient5</artifactId>
-            <version>5.1.1</version>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.11.0</version>
         </dependency>
 
         <!-- Unit tests (only used for testing, will not appear in release/compile scope) -->
