@@ -10,7 +10,6 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import com.alpsbte.alpslib.io.config.ConfigNotImplementedException;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -31,28 +30,17 @@ public class ConfigManager {
     private boolean consoleOutput = true;
 
     public ConfigManager(Plugin plugin, PSInitializer psInitializer) throws ConfigNotImplementedException {
-        this.consoleOutput = psInitializer.isConsoleOutput();
-        String configPath = psInitializer.getConfigPath();
+        this.consoleOutput = psInitializer.isDefaultInitializer() || psInitializer.isConsoleOutput();
+        String configPath = psInitializer.getPluginConfigPath();
+        String absoluteConfigPath = psInitializer.getAbsolutePluginConfigPath();
         String configFileName = psInitializer.getConfigFileName();
         String defaultConfigFileName = psInitializer.getDefaultConfigFileName();
 
-        String absolutePluginDataPath = plugin.getDataFolder().getAbsolutePath();
-        if(configPath != null)
-            absolutePluginDataPath = absolutePluginDataPath + configPath;
-
-        String fileName = "config.yml";
-        if(configFileName != null)
-            fileName = configFileName;
-
-        String defaultFileName = "default" + fileName.substring(0, 1).toUpperCase() + fileName.substring(1);
-        if(defaultConfigFileName != null)
-            defaultFileName = defaultConfigFileName;
-        
         InputStream defaultConfigResource =
-            plugin.getResource(Paths.get(configPath, defaultFileName).toString().replace(File.separator, "/"));
+            plugin.getResource(Paths.get(configPath, defaultConfigFileName).toString().replace(File.separator, "/"));
         //create/init config list
         this.configs = Collections.singletonList(
-                new Config(fileName, absolutePluginDataPath, defaultConfigResource)
+                new Config(configFileName, absoluteConfigPath, defaultConfigResource)
         );
 
 
