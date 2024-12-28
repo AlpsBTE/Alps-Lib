@@ -51,8 +51,8 @@ public class PlotCreator {
     private FileConfiguration config;
     private Plugin plugin;
 
-    public PlotCreator(Plugin plugin, FileConfiguration config, Connection connection){
-        this.schematicsPath = Paths.get(plugin.getDataFolder().getAbsolutePath(), "schematics") + File.separator;
+    public PlotCreator(Plugin plugin, FileConfiguration config, Connection connection, String pluginConfigPath){
+        this.schematicsPath = Paths.get(pluginConfigPath, "schematics") + File.separator;
         this.connection = connection;
         this.plugin = plugin;    
         this.config = config;

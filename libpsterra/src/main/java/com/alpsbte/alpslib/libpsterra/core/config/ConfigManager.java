@@ -61,7 +61,7 @@ public class ConfigManager {
 
 
         // Create schematics directory if not exists
-        this.schematicsPath = Paths.get(absolutePluginDataPath, "schematics") + File.separator;
+        this.schematicsPath = Paths.get(absoluteConfigPath, "schematics") + File.separator;
     
 
         try {

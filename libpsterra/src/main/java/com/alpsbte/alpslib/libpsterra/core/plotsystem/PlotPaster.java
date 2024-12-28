@@ -39,7 +39,7 @@ public class PlotPaster extends Thread {
 
     private boolean consoleOutput;
 
-    public PlotPaster(Plugin plugin, FileConfiguration config, Connection connection, boolean consoleOutput) {
+    public PlotPaster(Plugin plugin, FileConfiguration config, Connection connection, String worldName, String pluginConfigPath, boolean consoleOutput) {
         this.plugin = plugin;
         this.connection = connection;
         this.consoleOutput = consoleOutput;
@@ -49,10 +49,7 @@ public class PlotPaster extends Thread {
         this.world = Bukkit.getWorld(config.getString(ConfigPaths.WORLD_NAME));
         this.pasteInterval = config.getInt(ConfigPaths.PASTING_INTERVAL);
         this.broadcastMessages = config.getBoolean(ConfigPaths.BROADCAST_INFO);
-
-        String absolutePluginDataPath = plugin.getDataFolder().getAbsolutePath();
-        this.schematicsPath = Paths.get(absolutePluginDataPath, "schematics") + File.separator;
-    
+        this.schematicsPath = Paths.get(pluginConfigPath, "schematics") + File.separator;
     }
 
     @Override
