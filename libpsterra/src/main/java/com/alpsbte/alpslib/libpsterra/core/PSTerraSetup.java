@@ -113,8 +113,8 @@ public class PSTerraSetup {
         Utils.sendConsoleMessage(successPrefix + "Successfully tested FTP connection.", consoleOutput);
             
         // Register event listeners
-        plugin.getServer().getPluginManager().registerEvents(new EventListener(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new MenuFunctionListener(), plugin);
+        javaPlugin.getServer().getPluginManager().registerEvents(new MenuFunctionListener(), javaPlugin);
+        javaPlugin.getServer().getPluginManager().registerEvents(new AlpsHeadEventListener(), javaPlugin);
         Utils.sendConsoleMessage(successPrefix + "Successfully registered event listeners.", consoleOutput);
 
         result.plotCreator = new PlotCreator(plugin, configFile, result.connection);
