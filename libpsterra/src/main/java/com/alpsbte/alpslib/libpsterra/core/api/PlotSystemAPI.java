@@ -1,40 +1,15 @@
 package com.alpsbte.alpslib.libpsterra.core.api;
 
-import org.apache.hc.client5.http.classic.methods.HttpDelete;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.classic.methods.HttpPut;
-import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
-import com.alpsbte.alpslib.libpsterra.core.plotsystem.CityProject;
-import com.alpsbte.alpslib.libpsterra.core.plotsystem.Country;
-import com.alpsbte.alpslib.libpsterra.core.plotsystem.Difficulty;
-import com.alpsbte.alpslib.libpsterra.core.plotsystem.FTPConfiguration;
-import com.alpsbte.alpslib.libpsterra.core.plotsystem.Plot;
-import com.alpsbte.alpslib.libpsterra.core.plotsystem.Server;
+import com.alpsbte.alpslib.libpsterra.core.plotsystem.*;
+import com.alpsbte.alpslib.libpsterra.utils.API;
 import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.sk89q.worldedit.Vector;
+import com.google.gson.*;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import org.bukkit.util.Vector;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-// import java.net.http.HttpClient;
-// import java.net.http.HttpRequest;
-// import java.net.http.HttpResponse;
-// import java.net.http.HttpRequest.BodyPublisher;
-// import java.net.http.HttpRequest.Builder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,84 +24,63 @@ public class PlotSystemAPI {
         }
     }
 
-    private String host;// = "http://nwapi.buildtheearth.net";
+    private String host;
     private int port;
 
 
-    private static String GET_PS_BUILDERS_URL = "/api/plotsystem/builders";
-    private static String GET_PS_DIFFICULTIES_URL = "/api/plotsystem/difficulties";
-    private static String GET_PS_CITIES_URL = "/api/plotsystem/teams/%API_KEY%/cities";
-    private static String GET_PS_COUNTRIES_URL = "/api/plotsystem/teams/%API_KEY%/countries";
-    private static String GET_PS_SERVERS_URL = "/api/plotsystem/teams/%API_KEY%/servers";
-    private static String PS_PlOTS_URL = "/api/plotsystem/teams/%API_KEY%/plots";//for GET, PUT, CREATE and POST
-    private static String GET_PS_FTP_URL = "/api/plotsystem/teams/%API_KEY%/ftp";
+    private static final String GET_PS_BUILDERS_URL = "/api/plotsystem/builders";
+    private static final String GET_PS_DIFFICULTIES_URL = "/api/plotsystem/difficulties";
+    private static final String GET_PS_CITIES_URL = "/api/plotsystem/teams/%API_KEY%/cities";
+    private static final String GET_PS_COUNTRIES_URL = "/api/plotsystem/teams/%API_KEY%/countries";
+    private static final String GET_PS_SERVERS_URL = "/api/plotsystem/teams/%API_KEY%/servers";
+    private static final String PS_PlOTS_URL = "/api/plotsystem/teams/%API_KEY%/plots";//for GET, PUT, CREATE and POST
+    private static final String GET_PS_FTP_URL = "/api/plotsystem/teams/%API_KEY%/ftp";
 
 
     public PlotSystemAPI(String host, int port){
         this.host = host;
         this.port = port;
     }
-    
-    private enum RequestMethod{GET, PUT, POST, DELETE}
-
-    private String makeHttpRequest(RequestMethod method, String endpoint, String jsonBody) throws Exception{
-        String apiUrl = host + endpoint;
-        CloseableHttpClient httpClient = HttpClients.createDefault();
 
 
-
-        HttpUriRequestBase request = null;
-        switch (method) {
-            case GET:
-                request = new HttpGet(apiUrl);         
-                break;
-            case PUT:
-                request = new HttpPut(apiUrl);
-                break;
-            case POST:
-                request = new HttpPost(apiUrl);    
-                break;
-            case DELETE:
-                request = new HttpDelete(apiUrl);
-                break;
-        }
-        if (jsonBody != null){
-            request.setHeader("Accept", "application/json");
-            request.setHeader("Content-Type", "application/json");
-            StringEntity body = new StringEntity(jsonBody);
-            request.setEntity(body);
-
-        }
-       
-        CloseableHttpResponse response = httpClient.execute(request);
-
-        // Get HttpResponse Status
-        //System.out.println(response.getCode());  // 200
-        //System.out.println(response.getReasonPhrase()); // OK
-        
-        // Check if the request was successful (HTTP status code 200)
-        if (response.getCode() == 200) {
-            String jsonResponse = EntityUtils.toString(response.getEntity());
-            return jsonResponse;
-        } else {
-            String errorMessage = "API HTTP request return error code (HTTP status): " + response.getCode();
-            System.out.println(errorMessage);
-            throw new IOException(errorMessage);
-        }
-
-    }
     // A function that returns the content of a GET Request from a given URL
     private String httpGET(String endpoint) throws Exception{
-        return makeHttpRequest(RequestMethod.GET, endpoint, null);
-    }    
+        String apiUrl = host + endpoint;
+
+        return API.get(apiUrl);
+    }
+
     private String httpPUT(String endpoint, String jsonBodyString) throws Exception{
-        return makeHttpRequest(RequestMethod.PUT, endpoint, jsonBodyString);
+        String apiUrl = host + endpoint;
+
+        RequestBody requestBody = RequestBody.create(jsonBodyString, MediaType.parse("application/json"));
+        return API.put(apiUrl, requestBody);
     }
+
     private String httpPOST(String endpoint, String jsonBodyString) throws Exception{
-        return makeHttpRequest(RequestMethod.POST, endpoint, jsonBodyString);
+        String apiUrl = host + endpoint;
+
+        RequestBody requestBody = RequestBody.create(jsonBodyString, MediaType.parse("application/json"));
+        return API.post(apiUrl, requestBody);
     }
-    private String httpDELETE(String endpoint) throws Exception{
-        return makeHttpRequest(RequestMethod.DELETE, endpoint, null);
+
+    private void httpPUTAsync(String endpoint, String jsonBodyString, API.ApiResponseCallback callback) throws Exception{
+        String apiUrl = host + endpoint;
+
+        RequestBody requestBody = RequestBody.create(jsonBodyString, MediaType.parse("application/json"));
+        API.putAsync(apiUrl, requestBody, callback);
+    }
+    private void httpPOSTAsync(String endpoint, String jsonBodyString, API.ApiResponseCallback callback) throws Exception{
+        String apiUrl = host + endpoint;
+
+        RequestBody requestBody = RequestBody.create(jsonBodyString, MediaType.parse("application/json"));
+        API.postAsync(apiUrl, requestBody, callback);
+    }
+    private void httpDELETEAsync(String endpoint, String jsonBodyString, API.ApiResponseCallback callback) throws Exception{
+        String apiUrl = host + endpoint;
+
+        RequestBody requestBody = RequestBody.create(jsonBodyString, MediaType.parse("application/json"));
+        API.deleteAsync(apiUrl, requestBody, callback);
     }
 
 
@@ -148,7 +102,7 @@ public class PlotSystemAPI {
 
             return builderCount;
         } catch (Exception e) {
-            System.out.println("Error parsing JSON response: " + e.getMessage());
+            e.printStackTrace();
         }
 
         // Return a default value or throw an exception based on your requirements
@@ -180,7 +134,7 @@ public class PlotSystemAPI {
                 //api actually returns difficulty with a typo "requirment"
             }
         } catch (Exception e) {
-            System.out.println("Error parsing JSON response: " + e.getMessage());
+            e.printStackTrace();
         }
 
         // Return a default value or throw an exception based on your requirements
@@ -193,15 +147,15 @@ public class PlotSystemAPI {
         //List<Country> allCountries = getPSTeamCountries(teamApiKey);
         //response looks like this: array with city objects
         /*
-[
-    {
-        "country_id": 1,
-        "description": "Test-City in the beautiful Test-Country",
-        "id": 1,
-        "name": "Test-City",
-        "visible": 1
-    },
-]
+            [
+                {
+                    "country_id": 1,
+                    "description": "Test-City in the beautiful Test-Country",
+                    "id": 1,
+                    "name": "Test-City",
+                    "visible": 1
+                },
+            ]
          */
         try {
             JsonArray responseArray = new JsonParser().parse(jsonResponse).getAsJsonArray();
@@ -215,7 +169,7 @@ public class PlotSystemAPI {
                 cities.add(city);    
             }
         } catch (Exception e) {
-            System.out.println("Error parsing JSON response: " + e.getMessage());
+            e.printStackTrace();
         }
 
         // Return a default value or throw an exception based on your requirements
@@ -228,15 +182,15 @@ public class PlotSystemAPI {
 
         //response looks like this: object with map (countryID => countryObject) with country objects
         /*
-{
-    "1": {
-        "continent": "asia",
-        "head_id": "24208",
-        "id": 1,
-        "name": "Test-Country",
-        "server_id": 1
-    }
-}
+        {
+            "1": {
+                "continent": "asia",
+                "head_id": "24208",
+                "id": 1,
+                "name": "Test-Country",
+                "server_id": 1
+            }
+        }
          */
         Gson gson = new Gson();
         try {
@@ -249,7 +203,7 @@ public class PlotSystemAPI {
                 countries.add(c);
                 }
         } catch (Exception e) {
-            System.out.println("Error parsing JSON response: " + e.getMessage());
+            e.printStackTrace();
         }
 
         // Return a default value or throw an exception based on your requirements
@@ -261,33 +215,33 @@ public class PlotSystemAPI {
         String jsonResponse = httpGET(PS_PlOTS_URL.replace("%API_KEY%", teamApiKey));
 
 
-/** array of objects
- *[
-    {
-        "city_project_id": 1,
-        "create_date": "2022-07-14T00:00:00.000Z",
-        "create_player": "3b350308-d857-4ecc-8b71-c93a2cf3c87b",
-        "difficulty_id": 1,
-        "id": 1,
-        "last_activity": "2022-07-17T00:00:00.000Z",
-        "mc_coordinates": "3190699.5,690.5,-4673990.0",
-        "member_uuids": null,
-        "outline": "3190689.0,-4673973.0|3190718.0,-4673987.0|3190712.0,-4674007.0|3190689.0,-4674001.0|3190681.0,-4673994.0",
-        "owner_uuid": "3b350308-d857-4ecc-8b71-c93a2cf3c87b",
-        "pasted": 1,
-        "review_id": 5,
-        "score": 16,
-        "status": "completed",
-        "type": 2,
-        "version": 3
-    },...
- */
+        /** array of objects
+         *[
+            {
+                "city_project_id": 1,
+                "create_date": "2022-07-14T00:00:00.000Z",
+                "create_player": "3b350308-d857-4ecc-8b71-c93a2cf3c87b",
+                "difficulty_id": 1,
+                "id": 1,
+                "last_activity": "2022-07-17T00:00:00.000Z",
+                "mc_coordinates": "3190699.5,690.5,-4673990.0",
+                "member_uuids": null,
+                "outline": "3190689.0,-4673973.0|3190718.0,-4673987.0|3190712.0,-4674007.0|3190689.0,-4674001.0|3190681.0,-4673994.0",
+                "owner_uuid": "3b350308-d857-4ecc-8b71-c93a2cf3c87b",
+                "pasted": 1,
+                "review_id": 5,
+                "score": 16,
+                "status": "completed",
+                "type": 2,
+                "version": 3
+            },...
+         */
         try {
             JsonArray responseArray = new JsonParser().parse(jsonResponse).getAsJsonArray();
             for (JsonElement element : responseArray){
                 JsonObject obj = element.getAsJsonObject();
                 String[] splitCoordinates = obj.get("mc_coordinates").getAsString().split(",");
-                Vector mcCoordinates = Vector.toBlockPoint(
+                Vector mcCoordinates = new Vector(
                         Float.parseFloat(splitCoordinates[0]),
                         Float.parseFloat(splitCoordinates[1]),
                         Float.parseFloat(splitCoordinates[2])
@@ -299,7 +253,7 @@ public class PlotSystemAPI {
                 plots.add(p);
             }
         } catch (Exception e) {
-            System.out.println("Error parsing JSON response: " + e.getMessage());
+            e.printStackTrace();
         }
 
         // Return a default value or throw an exception based on your requirements
@@ -312,12 +266,12 @@ public class PlotSystemAPI {
 
         //response looks like this: object with map (serverid => server data)
         /*
-{
-    "1": {
-        "ftp_configuration_id": 2,
-        "id": 1,
-        "name": "BT-1"
-    },...
+            {
+                "1": {
+                    "ftp_configuration_id": 2,
+                    "id": 1,
+                    "name": "BT-1"
+                },...
          */
         Gson gson = new Gson();
         try {
@@ -330,7 +284,7 @@ public class PlotSystemAPI {
             }
 
         } catch (Exception e) {
-            System.out.println("Error parsing JSON response: " + e.getMessage());
+            e.printStackTrace();
         }
 
         // Return a default value or throw an exception based on your requirements
@@ -343,19 +297,19 @@ public class PlotSystemAPI {
 
         //response object with map serverID => array (!?) of ftp configs
         /*
-{
-    "1": [
-        {
-            "address": "xx.xxx.xxx.xxx",
-            "id": 2,
-            "isSFTP": 1,
-            "password": "<redacted>",
-            "port": 22,
-            "schematics_path": "/home/PlotSystem/",
-            "username": "<redacted>"
-        }
-    ],...
-}
+            {
+                "1": [
+                    {
+                        "address": "xx.xxx.xxx.xxx",
+                        "id": 2,
+                        "isSFTP": 1,
+                        "password": "<redacted>",
+                        "port": 22,
+                        "schematics_path": "/home/PlotSystem/",
+                        "username": "<redacted>"
+                    }
+                ],...
+            }
          */
         //register type adapter for boolean from integer
         Gson gson = new GsonBuilder()
@@ -376,7 +330,7 @@ public class PlotSystemAPI {
 
             
         } catch (Exception e) {
-            System.out.println("Error parsing JSON response: " + e.getMessage());
+            e.printStackTrace();
         }
         return configs;
     }
@@ -384,18 +338,22 @@ public class PlotSystemAPI {
         //Request body is an array with a single element, usind identifier and any parameters to change
         String requestBody = "[\n\t{\n"
                     + String.join(",\n\t\t", changeList ) +"\n\t}\n]";
-        // System.out.println("PUT " +PUT_PS_UPDATE_PLOT_URL.replace("%API_KEY%", teamApiKey) + "?id="+plotID);
-        // System.out.println("Body:\n" + requestBody);
-        httpPUT(PS_PlOTS_URL.replace("%API_KEY%", teamApiKey) + "?id="+plotID, requestBody);
 
+        httpPUTAsync(PS_PlOTS_URL.replace("%API_KEY%", teamApiKey) + "?id="+plotID, requestBody, new API.ApiResponseCallback() {
+            @Override
+            public void onResponse(String response) {
+            }
 
-        //System.out.println(jsonResponse);
+            @Override
+            public void onFailure(IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
 
     public int createPSPlot(int cityProjectID, int difficultyID, Vector plotCoords, String polyOutline, double plotVersion, String teamApiKey) throws Exception{
-        String vectorString = plotCoords.toString();
-        vectorString = vectorString.substring(1,vectorString.length()-1); //remove brackets
+        String vectorString = plotCoords.getX() + "," + plotCoords.getY() + "," + plotCoords.getZ();
         String requestBody = "[\n\t{\n"
             +"\t\t\"city_project_id\": "+cityProjectID+",\n"
             +"\t\t\"difficulty_id\": "+difficultyID+",\n"
@@ -404,8 +362,8 @@ public class PlotSystemAPI {
             +"\t\t\"version\": "+plotVersion+",\n"
             +"\t\t\"is_order\": false\n"            
             +"\n\t}\n]";
-        //System.out.println("POST " +PS_PlOTS_URL.replace("%API_KEY%", teamApiKey));
-        //System.out.println("Body:\n" + requestBody);
+
+
         String jsonResponse = httpPOST(PS_PlOTS_URL.replace("%API_KEY%", teamApiKey), requestBody);
 
         //get plot id from json-response
@@ -417,11 +375,16 @@ public class PlotSystemAPI {
 
     public void deletePSPlot(int plotID, String teamApiKey) throws Exception {
         //System.out.println("DELETE " +PS_PlOTS_URL.replace("%API_KEY%", teamApiKey));
-        httpDELETE(PS_PlOTS_URL.replace("%API_KEY%", teamApiKey) + "?id="+plotID);
+        httpDELETEAsync(PS_PlOTS_URL.replace("%API_KEY%", teamApiKey) + "?id="+plotID, "", new API.ApiResponseCallback() {
+            @Override
+            public void onResponse(String response) {
+            }
 
+            @Override
+            public void onFailure(IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
-
-    
-
 }
 
