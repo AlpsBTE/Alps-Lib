@@ -75,6 +75,13 @@ public class PSTerraSetup {
         result.configManager.reloadConfigs();
         FileConfiguration configFile = result.configManager.getConfig();
 
+        // Set up PSInitializer with config file if default initializer is used
+        if(psInitializer.isDefaultInitializer()){
+            psInitializer = new PSInitializer(plugin, configFile);
+            consoleOutput = psInitializer.isConsoleOutput();
+        }
+
+
         // Initialize connection
 
 

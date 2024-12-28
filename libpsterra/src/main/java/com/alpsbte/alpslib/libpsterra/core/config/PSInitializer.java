@@ -33,6 +33,27 @@ public class PSInitializer {
         this.APIKey = null;
     }
 
+
+    /**
+     * Initializes a new PSInitializer with a given config file.
+     */
+    public PSInitializer(JavaPlugin plugin, FileConfiguration configFile){
+        this.isDefaultInitializer = true;
+
+        this.consoleOutput = true;
+        this.checkForUpdates = configFile.getBoolean(ConfigPaths.CHECK_FOR_UPDATES);
+        this.devMode = configFile.getBoolean(ConfigPaths.DEV_MODE);
+        this.worldName = configFile.getString(ConfigPaths.WORLD_NAME);
+        this.configMustBeConfigured = true;
+        this.pluginConfigPath = "";
+        this.absolutePluginConfigPath = plugin.getDataFolder().getAbsolutePath() + pluginConfigPath;
+        this.configFileName = CONFIG_FILE_NAME;
+        this.defaultConfigFileName = DEFAULT_CONFIG_FILE_NAME;
+        this.APIHost = configFile.getString(ConfigPaths.API_URL);
+        this.APIPort = configFile.getInt(ConfigPaths.API_PORT);
+        this.APIKey = configFile.getString(ConfigPaths.API_KEY);
+    }
+
     /**
      * Initializes a new PSInitializer with the given values.
      * Allows other plugins to initialize the plugin with different settings to allow embedding the plugin in other plugins.
