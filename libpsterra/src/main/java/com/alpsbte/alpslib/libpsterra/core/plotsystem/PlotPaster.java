@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.IOException;

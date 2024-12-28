@@ -7,11 +7,11 @@ import com.alpsbte.alpslib.libpsterra.core.plotsystem.FTPConfiguration;
 import com.alpsbte.alpslib.libpsterra.core.plotsystem.Plot;
 import com.alpsbte.alpslib.libpsterra.core.plotsystem.Server;
 
-import com.sk89q.worldedit.Vector;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -249,7 +249,7 @@ public class DatabaseConnection implements Connection{
     }
     
     @Override
-    public int createPlotTransaction(CityProject cityProject, int difficultyID, Vector plotCenter, String polyOutline, Player player, double plotVersion) throws Exception{
+    public int createPlotTransaction(CityProject cityProject, int difficultyID, org.bukkit.util.Vector plotCenter, String polyOutline, Player player, double plotVersion) throws Exception{
         java.sql.Connection sqlConnection = getSqlConnection();
 
         if (sqlConnection != null) {
@@ -306,7 +306,7 @@ public class DatabaseConnection implements Connection{
             if (rs.next()) {
                 
                 String[] splitCoordinates = rs.getString(3).split(",");
-                Vector mcCoordinates = Vector.toBlockPoint(
+                Vector mcCoordinates = new Vector(
                         Float.parseFloat(splitCoordinates[0]),
                         Float.parseFloat(splitCoordinates[1]),
                         Float.parseFloat(splitCoordinates[2])

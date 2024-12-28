@@ -1,16 +1,15 @@
 package com.alpsbte.alpslib.libpsterra.core.plotsystem;
 
 import com.alpsbte.alpslib.libpsterra.core.Connection;
+import com.alpsbte.alpslib.libpsterra.core.PSTerraSetup;
 import com.alpsbte.alpslib.libpsterra.core.config.ConfigPaths;
 import com.alpsbte.alpslib.libpsterra.utils.FTPManager;
 import com.alpsbte.alpslib.libpsterra.utils.Utils;
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.extent.clipboard.io.ClipboardWriter;
-import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
-import com.sk89q.worldedit.function.operation.Operations;
+import com.alpsbte.alpslib.libpsterra.utils.VersionUtil;
+import com.alpsbte.alpslib.libpsterra.utils.WorldEditUtil;
+import com.cryptomorin.xseries.XMaterial;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.regions.AbstractRegion;
 import com.sk89q.worldedit.regions.CylinderRegion;
 import com.sk89q.worldedit.regions.Polygonal2DRegion;
@@ -26,6 +25,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.FileOutputStream;
