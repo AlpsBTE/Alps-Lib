@@ -12,9 +12,6 @@ import java.util.logging.Level;
 
 public class Utils {
 
-    // Head Database API
-    public static HeadDatabaseAPI headDatabaseAPI;
-
     /**
      * Prefix used for all command permissions.
      */
