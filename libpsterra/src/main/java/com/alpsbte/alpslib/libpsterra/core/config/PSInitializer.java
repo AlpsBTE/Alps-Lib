@@ -1,14 +1,23 @@
 package com.alpsbte.alpslib.libpsterra.core.config;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+
 public class PSInitializer {
+
+    public static String CONFIG_FILE_NAME = "config.yml";
+    public static String DEFAULT_CONFIG_FILE_NAME = "defaultConfig.yml";
+
 
     private final boolean isDefaultInitializer;
 
     private final boolean consoleOutput;
     private final boolean checkForUpdates;
     private final boolean devMode;
+    private final String worldName;
     private final boolean configMustBeConfigured;
-    private final String configPath;
+    private final String pluginConfigPath;
+    private final String absolutePluginConfigPath;
     private final String configFileName;
     private final String defaultConfigFileName;
     private final String APIHost;
@@ -16,18 +25,20 @@ public class PSInitializer {
     private final String APIKey;
 
     /**
-     * Initializes a new PSInitializer with default values.
+     * Initializes a new PSInitializer with empty default values.
      */
-    public PSInitializer(){
+    public PSInitializer(JavaPlugin plugin){
         this.isDefaultInitializer = true;
 
         this.consoleOutput = true;
         this.checkForUpdates = true;
         this.devMode = false;
+        this.worldName = null;
         this.configMustBeConfigured = true;
-        this.configPath = null;
-        this.configFileName = null;
-        this.defaultConfigFileName = null;
+        this.pluginConfigPath = "";
+        this.absolutePluginConfigPath = plugin.getDataFolder().getAbsolutePath() + pluginConfigPath;
+        this.configFileName = CONFIG_FILE_NAME;
+        this.defaultConfigFileName = DEFAULT_CONFIG_FILE_NAME;
         this.APIHost = null;
         this.APIPort = 0;
         this.APIKey = null;
@@ -61,21 +72,23 @@ public class PSInitializer {
      * @param consoleOutput Whether the plugin should output messages to the console
      * @param checkForUpdates Whether the plugin should check for updates
      * @param devMode Whether the plugin should run in development mode
-     * @param configPath The path to the config file
+     * @param pluginConfigPath The path to the config file
      * @param configFileName The name of the config file
      * @param defaultConfigFileName The name of the default config file
      * @param APIHost The URL of the API
      * @param APIPort The port of the API
      * @param APIKey The key of the API
      */
-    public PSInitializer(boolean consoleOutput, boolean checkForUpdates, boolean devMode, boolean configMustBeConfigured, String configPath, String configFileName, String defaultConfigFileName, String APIHost, int APIPort, String APIKey) {
+    public PSInitializer(JavaPlugin plugin, boolean consoleOutput, boolean checkForUpdates, boolean devMode, String worldName, boolean configMustBeConfigured, String pluginConfigPath, String configFileName, String defaultConfigFileName, String APIHost, int APIPort, String APIKey) {
         this.isDefaultInitializer = false;
 
         this.consoleOutput = consoleOutput;
         this.checkForUpdates = checkForUpdates;
         this.devMode = devMode;
+        this.worldName = worldName;
         this.configMustBeConfigured = configMustBeConfigured;
-        this.configPath = configPath;
+        this.pluginConfigPath = pluginConfigPath;
+        this.absolutePluginConfigPath = plugin.getDataFolder().getAbsolutePath() + pluginConfigPath;
         this.configFileName = configFileName;
         this.defaultConfigFileName = defaultConfigFileName;
         this.APIHost = APIHost;
@@ -100,12 +113,20 @@ public class PSInitializer {
         return devMode;
     }
 
+    public String getWorldName() {
+        return worldName;
+    }
+
     public boolean isConfigMustBeConfigured() {
         return configMustBeConfigured;
     }
 
-    public String getConfigPath() {
-        return configPath;
+    public String getPluginConfigPath() {
+        return pluginConfigPath;
+    }
+
+    public String getAbsolutePluginConfigPath() {
+        return absolutePluginConfigPath;
     }
 
     public String getConfigFileName() {
