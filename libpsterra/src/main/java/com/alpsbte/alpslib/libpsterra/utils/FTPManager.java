@@ -25,6 +25,7 @@ import java.util.logging.Level;
 public class FTPManager {
 
     private static FileSystemOptions fileOptions;
+    private static boolean debug = false;
 
     private final static String DEFAULT_SCHEMATIC_PATH_LINUX = "/var/lib/Plot-System/schematics";
 
@@ -65,7 +66,7 @@ public class FTPManager {
 
                 // Get remote path and create missing directories
                 FileObject remote = fileManager.resolveFile(ftpURL.replace("finishedSchematics/", ""), fileOptions);
-                Bukkit.getConsoleSender().sendMessage("FTPManager: uploading Schematic "+ schematic.getName()+" to " + remote.getPublicURIString());
+                if(debug) Bukkit.getConsoleSender().sendMessage("FTPManager: uploading Schematic "+ schematic.getName()+" to " + remote.getPublicURIString());
         
                 remote.createFolder();
 
@@ -79,7 +80,8 @@ public class FTPManager {
         }
     }
 
-    public static void downloadSchematic(String ftpURL, File schematic) throws FileSystemException {
+    public static boolean downloadSchematic(String ftpURL, File schematic) throws FileSystemException {
+        boolean copiedFile = false;
         try (StandardFileSystemManager fileManager = new StandardFileSystemManager()) {
             fileManager.init();
 
@@ -88,15 +90,20 @@ public class FTPManager {
 
             // Get remote path
             FileObject remote = fileManager.resolveFile(ftpURL, fileOptions);
-            Bukkit.getConsoleSender().sendMessage("FTPManager: downloading Schematic "+ schematic.getName()+" from " + remote.getPublicURIString());
+            if(debug) Bukkit.getConsoleSender().sendMessage("FTPManager: downloading Schematic "+ schematic.getName()+" from " + remote.getPublicURIString());
         
             // Get remote schematic and write it to local file
             FileObject remoteSchematic = remote.resolveFile(schematic.getName());
-            localSchematic.copyFrom(remoteSchematic, Selectors.SELECT_SELF);
+            if (remoteSchematic.exists()) {
+                localSchematic.copyFrom(remoteSchematic, Selectors.SELECT_SELF);
+                copiedFile = true;
+            }
 
             localSchematic.close();
             remoteSchematic.close();
         }
+
+        return copiedFile;
     }
 
     public static void testSFTPConnection_JSCH(Connection connection)  throws Exception {
@@ -128,7 +135,7 @@ public class FTPManager {
         jschSession.setPassword(ftpConfiguration.password);
         jschSession.setConfig(config);
 
-        System.out.println("Testing JSCH sftp connect (ignoring host fingerprint, strong crpyto) to " + ftpConfiguration.address + " with user " + ftpConfiguration.username);
+        if(debug) System.out.println("Testing JSCH sftp connect (ignoring host fingerprint, strong crpyto) to " + ftpConfiguration.address + " with user " + ftpConfiguration.username);
         Logger jschLogger = new Logger() {
             @Override
             public boolean isEnabled(int arg0){return true;}
@@ -142,7 +149,7 @@ public class FTPManager {
         JSch.setLogger(jschLogger);
         jschSession.connect();
         jschSession.disconnect();
-        System.out.println("JSCH Success!");
+        if(debug) System.out.println("JSCH Success!");
 
         
     }
@@ -197,5 +204,9 @@ public class FTPManager {
         Utils.sendConsoleMessage("FTP testfile exists: " +Boolean.toString(remote.exists()), consoleOutput);
         
         
+    }
+
+    public static void setDebugMode(boolean debug) {
+        FTPManager.debug = debug;
     }
 }

@@ -15,9 +15,9 @@ import com.alpsbte.alpslib.libpsterra.core.plotsystem.Server;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.sk89q.worldedit.Vector;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.util.Vector;
 import org.junit.jupiter.api.Test;
 import java.io.File;
 

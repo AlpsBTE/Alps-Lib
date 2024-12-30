@@ -25,6 +25,7 @@
 package com.alpsbte.alpslib.utils.head;
 
 import com.alpsbte.alpslib.utils.AlpsUtils;
+import com.cryptomorin.xseries.XMaterial;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
@@ -75,14 +76,15 @@ public class AlpsHeadUtils {
         ItemStack customHead = customHeads.getIfPresent(headDbId);
         if (customHead != null) return customHead;
         if (headDatabaseAPI == null || AlpsUtils.tryParseInt(headDbId) == null || !headDatabaseAPI.isHead(headDbId))
-            return new ItemStack(Material.SKELETON_SKULL, 1);
+            return XMaterial.SKELETON_SKULL.parseItem();
         return headDatabaseAPI.getItemHead(headDbId);
     }
 
     public static ItemStack getPlayerHead(UUID playerUUID) {
         ItemStack playerHead = customHeads.getIfPresent(playerUUID.toString());
         if (playerHead != null) return playerHead;
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
+        ItemStack skull = XMaterial.PLAYER_HEAD.parseItem();
+        if (skull == null) return null;
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
         if (meta == null) return skull;
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUUID));

@@ -1,6 +1,6 @@
 package com.alpsbte.alpslib.libpsterra.core.plotsystem;
 
-import com.sk89q.worldedit.Vector;
+import org.bukkit.util.Vector;
 
 public class Plot {
 
