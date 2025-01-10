@@ -42,8 +42,12 @@ public class CMD_PastePlot implements CommandExecutor {
 
 
                          try {
-                            plotPaster.pastePlotSchematic(plotID, cityProject, plotPaster.world, plot.mc_coordinates, plot.version, plotPaster.fastMode);
-                            Bukkit.broadcastMessage("§7§l>§a Pasted §61 §aplot!");
+                            boolean successful = plotPaster.pastePlotSchematic(plotID, cityProject, Bukkit.getWorld(plotPaster.worldName), plot.mc_coordinates, plot.version, plotPaster.fastMode);
+
+                            if(successful)
+                                Bukkit.broadcastMessage("§7§l>§a Pasted §61 §aplot!");
+                            else
+                                sender.sendMessage(Utils.getErrorMessageFormat("An error occurred while pasting plot!", config));
                         } catch (Exception ex) {
                             Bukkit.getLogger().log(Level.SEVERE, "An error occurred while pasting plot with the ID " + plotID + "!", ex);
                             sender.sendMessage(Utils.getErrorMessageFormat("An error occurred while pasting plot!", config));

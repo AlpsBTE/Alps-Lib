@@ -1,9 +1,10 @@
 package com.alpsbte.alpslib.libpsterra.core.plotsystem;
 
 import com.alpsbte.alpslib.libpsterra.core.Connection;
+import com.alpsbte.alpslib.libpsterra.core.config.PSInitializer;
 import com.alpsbte.alpslib.utils.item.LegacyItemBuilder;
 import com.alpsbte.alpslib.utils.item.LegacyLoreBuilder;
-
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,10 +15,11 @@ import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.mask.BinaryMask;
 import org.ipvp.canvas.mask.Mask;
 import org.ipvp.canvas.type.ChestMenu;
-
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class CreatePlotMenu {
@@ -31,10 +33,13 @@ public class CreatePlotMenu {
     private Connection connection;
     private PlotCreator plotCreator;
 
-    public CreatePlotMenu(Player player, Connection connection, PlotCreator plotCreator) {
+    private PSInitializer initializer;
+
+    public CreatePlotMenu(@NotNull PSInitializer initializer, Player player, Connection connection, PlotCreator plotCreator) {
         this.player = player;
         this.connection = connection;
         this.plotCreator = plotCreator;
+        this.initializer = initializer;
         this.cityProjects = getCityProjects();
         getCityProjectUI().open(player);
 
@@ -43,7 +48,7 @@ public class CreatePlotMenu {
 
     public Menu getCityProjectUI() {
         Mask mask = BinaryMask.builder(createPlotMenu)
-                .item(new LegacyItemBuilder(Material.STAINED_GLASS_PANE, 1, (byte)7).setName(" ").build())
+                .item(new LegacyItemBuilder(Objects.requireNonNull(XMaterial.GRAY_STAINED_GLASS_PANE.parseItem())).setName(" ").build())
                 .pattern("111101111") // First row
                 .pattern("000000000") // Second row
                 .pattern("000000000") // Third row
@@ -69,7 +74,7 @@ public class CreatePlotMenu {
         }
 
         createPlotMenu.getSlot(48).setItem(
-                new LegacyItemBuilder(Material.WOOL, 1, (byte) 13)
+                new LegacyItemBuilder(Objects.requireNonNull(XMaterial.GREEN_WOOL.parseItem()))
                         .setName("§a§lContinue")
                         .build());
         createPlotMenu.getSlot(48).setClickHandler((clickPlayer, clickInformation) -> {
@@ -78,7 +83,7 @@ public class CreatePlotMenu {
         });
 
         createPlotMenu.getSlot(50).setItem(
-                new LegacyItemBuilder(Material.WOOL, 1, (byte) 14)
+                new LegacyItemBuilder(Objects.requireNonNull(XMaterial.RED_WOOL.parseItem()))
                         .setName("§c§lCancel")
                         .build());
         createPlotMenu.getSlot(50).setClickHandler((clickPlayer, clickInformation) -> {
@@ -93,7 +98,7 @@ public class CreatePlotMenu {
 
         // Set glass border
         Mask mask = BinaryMask.builder(createPlotMenu)
-                .item(new LegacyItemBuilder(Material.STAINED_GLASS_PANE, 1, (byte)7).setName(" ").build())
+                .item(new LegacyItemBuilder(Objects.requireNonNull(XMaterial.GRAY_STAINED_GLASS_PANE.parseItem())).setName(" ").build())
                 .pattern("111111111") // First row
                 .pattern("000000000") // Second row
                 .pattern("111111111") // Third row
@@ -101,7 +106,7 @@ public class CreatePlotMenu {
         mask.apply(difficultyMenu);
 
         difficultyMenu.getSlot(10).setItem(
-                new LegacyItemBuilder(Material.WOOL, 1, (byte) 5)
+                new LegacyItemBuilder(Objects.requireNonNull(XMaterial.LIME_WOOL.parseItem()))
                         .setName("§a§lEasy")
                         .build()
         );
@@ -111,7 +116,7 @@ public class CreatePlotMenu {
         });
 
         difficultyMenu.getSlot(13).setItem(
-                new LegacyItemBuilder(Material.WOOL, 1, (byte) 1)
+                new LegacyItemBuilder(Objects.requireNonNull(XMaterial.ORANGE_WOOL.parseItem()))
                         .setName("§6§lMedium")
                         .build()
         );
@@ -121,7 +126,7 @@ public class CreatePlotMenu {
         });
 
         difficultyMenu.getSlot(16).setItem(
-                new LegacyItemBuilder(Material.WOOL, 1, (byte) 14)
+                new LegacyItemBuilder(Objects.requireNonNull(XMaterial.RED_WOOL.parseItem()))
                         .setName("§c§lHard")
                         .build()
         );
@@ -137,7 +142,10 @@ public class CreatePlotMenu {
         try {
             List<CityProject> listProjects = new ArrayList<>();
             boolean success = connection.getAllCityProjects(listProjects);
-            Bukkit.getConsoleSender().sendMessage("loading city projects to build menu. found " + listProjects.size() + " cityprojects");
+
+            if(initializer.isDevMode())
+                Bukkit.getConsoleSender().sendMessage("loading city projects to build menu. found " + listProjects.size() + " cityprojects");
+
             int counter = 0;
             for (CityProject city : listProjects){
                 Country cityCountry = connection.getCountry(city.country_id);

@@ -1,14 +1,15 @@
 package com.alpsbte.alpslib.libpsterra.core;
 
 import java.util.List;
+
 import org.bukkit.entity.Player;
-import com.sk89q.worldedit.Vector;
 
 import com.alpsbte.alpslib.libpsterra.core.plotsystem.CityProject;
 import com.alpsbte.alpslib.libpsterra.core.plotsystem.Country;
 import com.alpsbte.alpslib.libpsterra.core.plotsystem.FTPConfiguration;
 import com.alpsbte.alpslib.libpsterra.core.plotsystem.Plot;
 import com.alpsbte.alpslib.libpsterra.core.plotsystem.Server;
+import org.bukkit.util.Vector;
 
 public interface Connection {
     //public List<Integer> getBuilders() throws Exception;
