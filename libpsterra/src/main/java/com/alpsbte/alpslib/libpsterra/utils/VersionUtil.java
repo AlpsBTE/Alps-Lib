@@ -6,7 +6,12 @@ public class VersionUtil {
 
     public static Version getVersion() {
         String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-        return Version.valueOf(version);
+
+        // If the version is supported return it, otherwise return OTHER
+        for (Version v : Version.values())
+            if (version.equalsIgnoreCase(v.toString()))
+                return v;
+        return Version.OTHER;
     }
 
     public static boolean is_1_20() {
@@ -17,7 +22,8 @@ public class VersionUtil {
         return getVersion().equals(Version.v1_12_R1);
     }
 
-    enum Version{
+    public enum Version{
+        OTHER("other", 0),
         v1_12_R1("1.12", 12),
         v1_13_R1("1.13", 13),
         v1_13_R2("1.13.2", 13),
@@ -34,8 +40,10 @@ public class VersionUtil {
         v1_19_R3("1.19.4", 19),
         v1_20_R1("1.20.1", 20),
         v1_20_R2("1.20.2", 20),
-        v1_20_R3("1.20.4", 20);
-
+        v1_20_R3("1.20.4", 20),
+        v1_21_R1("1.21.1", 21),
+        v1_21_R2("1.21.3", 21),
+        v1_21_R3("1.21.4", 21);
 
         private final String bukkitVersion;
 
