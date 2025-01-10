@@ -15,8 +15,8 @@ import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.mask.BinaryMask;
 import org.ipvp.canvas.mask.Mask;
 import org.ipvp.canvas.type.ChestMenu;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +35,7 @@ public class CreatePlotMenu {
 
     private PSInitializer initializer;
 
-    public CreatePlotMenu(@Nonnull PSInitializer initializer, Player player, Connection connection, PlotCreator plotCreator) {
+    public CreatePlotMenu(@NotNull PSInitializer initializer, Player player, Connection connection, PlotCreator plotCreator) {
         this.player = player;
         this.connection = connection;
         this.plotCreator = plotCreator;
