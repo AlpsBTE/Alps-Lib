@@ -249,7 +249,7 @@ public class DatabaseConnection implements Connection{
     }
     
     @Override
-    public int createPlotTransaction(CityProject cityProject, int difficultyID, org.bukkit.util.Vector plotCenter, String polyOutline, Player player, double plotVersion) throws Exception{
+    public int createPlotTransaction(CityProject cityProject, int difficultyID, Vector plotCenter, String polyOutline, Player player, double plotVersion) throws Exception{
         java.sql.Connection sqlConnection = getSqlConnection();
 
         if (sqlConnection != null) {
