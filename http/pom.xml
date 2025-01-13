@@ -5,13 +5,13 @@
     <parent>
         <artifactId>alpslib</artifactId>
         <groupId>com.alpsbte.alpslib</groupId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>alpslib-http</artifactId>
-
     <name>AlpsLib-Http</name>
+    <version>1.0.ß</version>
 
     <dependencies>
         <!-- JUnit 5 -->
@@ -52,7 +52,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.0</version>
                 <configuration>
                     <outputDirectory>${project.build.directory}/shaded/</outputDirectory>
                 </configuration>
@@ -81,8 +81,8 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
 
-        <junit.jupiter.version>5.10.3</junit.jupiter.version>
-        <kotlin.version>1.9.24</kotlin.version>
+        <junit.jupiter.version>5.11.4</junit.jupiter.version>
+        <kotlin.version>2.0.21</kotlin.version>
     </properties>
     <repositories>
         <repository>

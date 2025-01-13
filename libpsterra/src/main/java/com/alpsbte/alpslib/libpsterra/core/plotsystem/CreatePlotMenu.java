@@ -5,6 +5,7 @@ import com.alpsbte.alpslib.libpsterra.core.config.PSInitializer;
 import com.alpsbte.alpslib.utils.item.LegacyItemBuilder;
 import com.alpsbte.alpslib.utils.item.LegacyLoreBuilder;
 import com.cryptomorin.xseries.XMaterial;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,8 +24,8 @@ import java.util.Objects;
 import java.util.logging.Level;
 
 public class CreatePlotMenu {
-    private final Menu createPlotMenu = ChestMenu.builder(6).title("Create Plot").redraw(true).build();
-    private final Menu difficultyMenu = ChestMenu.builder(3).title("Select Plot Difficulty").redraw(true).build();
+    private final Menu createPlotMenu = ChestMenu.builder(6).title(Component.text("Create Plot")).redraw(true).build();
+    private final Menu difficultyMenu = ChestMenu.builder(3).title(Component.text("Select Plot Difficulty")).redraw(true).build();
 
     private final List<CityProject> cityProjects;
     private int selectedCityID = -1;
@@ -86,9 +87,7 @@ public class CreatePlotMenu {
                 new LegacyItemBuilder(Objects.requireNonNull(XMaterial.RED_WOOL.parseItem()))
                         .setName("§c§lCancel")
                         .build());
-        createPlotMenu.getSlot(50).setClickHandler((clickPlayer, clickInformation) -> {
-            clickPlayer.closeInventory();
-        });
+        createPlotMenu.getSlot(50).setClickHandler((clickPlayer, clickInformation) -> clickPlayer.closeInventory());
 
         return createPlotMenu;
     }
@@ -150,7 +149,6 @@ public class CreatePlotMenu {
             for (CityProject city : listProjects){
                 Country cityCountry = connection.getCountry(city.country_id);
                 createPlotMenu.getSlot(9 + counter).setItem(city.getItem(cityCountry.head_id));
-                //listProjects.add(city);
                 counter++;
             }
 

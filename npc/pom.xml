@@ -5,13 +5,13 @@
     <parent>
         <artifactId>alpslib</artifactId>
         <groupId>com.alpsbte.alpslib</groupId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>alpslib-npc</artifactId>
-
     <name>AlpsLib-NPC</name>
+    <version>1.0.37</version>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -31,30 +31,30 @@
             <url>https://mvn.alps-bte.com/repository/alps-bte/</url>
         </repository>
         <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.io/repository/maven-public/</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
+        <repository> <!-- Decent Holograms -->
             <id>jitpack</id>
             <url>https://jitpack.io/</url>
+        </repository>
+        <repository>  <!-- Decent Holograms item-nbt-api -->
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.21.1-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.alpsbte.alpslib</groupId>
             <artifactId>alpslib-hologram</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
