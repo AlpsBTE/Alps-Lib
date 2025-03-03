@@ -24,7 +24,6 @@
 
 package com.alpsbte.alpslib.utils.item;
 
-import com.alpsbte.alpslib.utils.AlpsUtils;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.*;
@@ -33,6 +32,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class ItemBuilder {
     private final ItemStack item;
     protected final ItemMeta itemMeta;
 
-    public ItemBuilder(ItemStack item) {
+    public ItemBuilder(@NotNull ItemStack item) {
         itemMeta = item.getItemMeta();
         if (itemMeta != null) itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         this.item = item;
@@ -77,7 +77,7 @@ public class ItemBuilder {
     }
 
     @Deprecated
-    public ItemBuilder setLore(List<String> lore) {
+    public ItemBuilder setLore(@NotNull List<String> lore) {
         List<TextComponent> components = new ArrayList<>();
         for (String loreStr : lore)
             components.add(LORE_COMPONENT.append(LegacyComponentSerializer.legacySection().deserialize(loreStr)));
@@ -122,10 +122,10 @@ public class ItemBuilder {
      */
     public ItemBuilder setItemModel(Object model) {
 
-        if (model instanceof Integer modelInt) {
-            setItemModel((int)modelInt);
-        } else if (model instanceof String modelString) {
-            setItemModel(modelString);
+        if (model instanceof Integer) {
+            setItemModel((int)model);
+        } else if (model instanceof String) {
+            setItemModel((String)model);
         }
         return this;
     }
