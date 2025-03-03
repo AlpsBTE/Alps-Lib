@@ -60,4 +60,11 @@
             <url>https://repo.maven.apache.org/maven2/</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>alps-nexus</id>
+            <url>https://mvn.alps-bte.com/repositories/alps-bte</url>
+        </repository>
+    </distributionManagement>
 </project>

@@ -36,6 +36,11 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
+        <repository> <!-- FancyNpcs Ref: https://github.com/FancyMcPlugins/FancyNpcs/releases -->
+            <id>fancyplugins-releases</id>
+            <name>FancyPlugins Repository</name>
+            <url>https://repo.fancyplugins.de/releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
