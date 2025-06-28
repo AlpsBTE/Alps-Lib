@@ -32,9 +32,14 @@
             <id>jitpack</id>
             <url>https://jitpack.io/</url>
         </repository>
-        <repository>  <!-- Decent Holograms item-nbt-api -->
+        <repository>  <!-- item-nbt-api (von Decent Holograms) -->
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
+        </repository>
+        <repository> <!-- FancyNpcs -->
+            <id>fancyinnovations-releases</id>
+            <name>FancyInnovations Repository</name>
+            <url>https://repo.fancyinnovations.com/releases</url>
         </repository>
     </repositories>
 
@@ -45,19 +50,19 @@
             <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- https://mvn.alps-bte.com/#browse/browse:alps-bte:com/alpsbte/alpslib/alpslib-hologram -->
             <groupId>com.alpsbte.alpslib</groupId>
             <artifactId>alpslib-hologram</artifactId>
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- https://modrinth.com/plugin/fancynpcs/versions?c=release -->
             <groupId>de.oliver</groupId>
             <artifactId>FancyNpcs</artifactId>
             <version>2.4.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- https://github.com/DecentSoftware-eu/DecentHolograms/releases -->
             <groupId>com.github.decentsoftware-eu</groupId>
             <artifactId>decentholograms</artifactId>
             <version>2.8.11</version>
@@ -70,7 +75,7 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
 
         <plugins>
-            <plugin>
+            <plugin> <!-- https://maven.apache.org/plugins/maven-shade-plugin/ -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
