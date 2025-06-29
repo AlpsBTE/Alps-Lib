@@ -36,4 +36,6 @@ public class DatabaseConfig {
     long connectionTimeout;
     long keepaliveTime;
     int maximumPoolSize;
+    long leakDetectionThreshold;
+    String poolName;
 }

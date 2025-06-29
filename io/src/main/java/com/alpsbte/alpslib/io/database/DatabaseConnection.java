@@ -40,7 +40,6 @@ public class DatabaseConnection {
     private static HikariDataSource hikari;
     private static ComponentLogger logger;
 
-
     public static void initializeDatabase(@NotNull DatabaseConfig config, ComponentLogger componentLogger) throws ClassNotFoundException {
         Class.forName("org.mariadb.jdbc.Driver");
 
@@ -52,11 +51,12 @@ public class DatabaseConnection {
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
-        hikariConfig.setPoolName("plotsystem-hikari");
         hikariConfig.setMaxLifetime(config.getMaxLifetime());
         hikariConfig.setConnectionTimeout(config.getConnectionTimeout());
         hikariConfig.setKeepaliveTime(config.getKeepaliveTime());
         hikariConfig.setMaximumPoolSize(config.getMaximumPoolSize());
+        hikariConfig.setLeakDetectionThreshold(config.getLeakDetectionThreshold());
+        hikariConfig.setPoolName(config.getPoolName());
 
         hikari = new HikariDataSource(hikariConfig);
         logger = componentLogger;
