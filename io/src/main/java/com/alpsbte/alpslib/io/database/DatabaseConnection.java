@@ -34,15 +34,27 @@ import java.sql.SQLException;
 
 import static net.kyori.adventure.text.Component.text;
 
+/**
+ * Provides centralized management for the database connection.
+ * <p>
+ * This class initializes and manages a HikariCP connection pool
+ * and offers methods to obtain and close database connections.
+ * </p>
+ */
 public class DatabaseConnection {
     private DatabaseConnection() {}
 
     private static HikariDataSource hikari;
     private static ComponentLogger logger;
 
+    /**
+     * Initializes the connection pool with the given configuration data.
+     *
+     * @param config          The database configuration
+     * @param componentLogger Logger for status and error messages
+     */
     public static void initializeDatabase(@NotNull DatabaseConfig config, ComponentLogger componentLogger) throws ClassNotFoundException {
         Class.forName("org.mariadb.jdbc.Driver");
-
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(config.getUrl() + config.getDbName() + "?allowMultiQueries=true");
         hikariConfig.setUsername(config.getUsername());
@@ -62,6 +74,12 @@ public class DatabaseConnection {
         logger = componentLogger;
     }
 
+    /**
+     * Returns a new connection from the connection pool.
+     *
+     * @return An open SQL connection
+     * @throws SQLException If no connection is available
+     */
     public static @NotNull Connection getConnection() throws SQLException {
         if (hikari == null) {
             throw new SQLException("Unable to get a connection from the pool. (hikari is null)");
@@ -75,6 +93,10 @@ public class DatabaseConnection {
         return connection;
     }
 
+    /**
+     * Closes the connection pool and releases all resources.
+     * Logs success or a warning if no connection exists, if logger is set.
+     */
     public static void shutdown() {
         if (hikari != null) {
             hikari.close();
