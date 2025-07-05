@@ -28,7 +28,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class DatabaseConfigPaths {
+public class DatabaseConfigPaths {
     private DatabaseConfigPaths() {throw new IllegalStateException("Utility class");}
 
     private static final String DATABASE = "database.";
@@ -44,8 +44,8 @@ public abstract class DatabaseConfigPaths {
     public static final String DATABASE_POOL_NAME = DATABASE + "pool-name";
 
     @Contract("_ -> new")
-    public static @NotNull DatabaseConfig getConfig(@NotNull FileConfiguration config) {
-        return new DatabaseConfig(
+    public static @NotNull DatabaseSection getConfig(@NotNull FileConfiguration config) {
+        return new DatabaseSection(
                 config.getString(DATABASE_URL),
                 config.getString(DATABASE_NAME),
                 config.getString(DATABASE_USERNAME),

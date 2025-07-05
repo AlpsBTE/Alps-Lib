@@ -34,7 +34,7 @@ import lombok.Value;
  * </p>
  */
 @Value
-public class DatabaseConfig {
+public class DatabaseSection {
     /**
      * The JDBC URL of the database (without database name).
      */

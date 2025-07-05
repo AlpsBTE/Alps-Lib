@@ -53,7 +53,7 @@ public class DatabaseConnection {
      * @param config          The database configuration
      * @param componentLogger Logger for status and error messages
      */
-    public static void initializeDatabase(@NotNull DatabaseConfig config, ComponentLogger componentLogger) throws ClassNotFoundException {
+    public static void initializeDatabase(@NotNull DatabaseSection config, ComponentLogger componentLogger) throws ClassNotFoundException {
         Class.forName("org.mariadb.jdbc.Driver");
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(config.getUrl() + config.getDbName() + "?allowMultiQueries=true");

@@ -58,12 +58,34 @@ public class SqlHelper {
     /**
      * A functional interface representing an operation that accepts a {@link PreparedStatement}
      * and returns no result, potentially throwing a {@link SQLException}.
-     *
-     * @param <T> The type of the input (usually {@link PreparedStatement})
      */
     @FunctionalInterface
-    public interface SQLConsumer<T> {
-        void accept(T t) throws SQLException;
+    public interface SQLConsumer {
+        void apply(PreparedStatement ps) throws SQLException;
+    }
+
+    /**
+     * A functional interface representing an operation that supplies a result and may throw a {@link SQLException}.
+     * <p>
+     * This is similar to {@link java.util.function.Supplier}, but allows for SQL exceptions.
+     * </p>
+     *
+     * @param <T> The type of result supplied
+     */
+    @FunctionalInterface
+    public interface SQLCheckedSupplier<T> {
+        T get() throws SQLException;
+    }
+
+    /**
+     * A functional interface representing an operation that does not return a result and may throw a {@link SQLException}.
+     * <p>
+     * This is similar to {@link Runnable}, but allows for SQL exceptions.
+     * </p>
+     */
+    @FunctionalInterface
+    public interface SQLRunnable {
+        void get() throws SQLException;
     }
 
     /**
@@ -75,9 +97,35 @@ public class SqlHelper {
      * @return The result returned by the {@code action}, or {@code null} if an exception occurs
      */
     public static <T> T runQuery(String query, @NotNull SQLFunction<T> action) throws SQLException {
-        try (Connection con = Objects.requireNonNull(DatabaseConnection.getConnection());
-             PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = Objects.requireNonNull(DatabaseConnection.getConnection())) {
+            return runQuery(query, con, action);
+        }
+    }
+
+    /**
+     * Executes a database query and returns a result using the provided {@link SQLFunction}.
+     *
+     * @param query  The SQL query string to execute
+     * @param con    The {@link Connection} to use for the query execution
+     * @param action A lambda or method reference that performs operations on the {@link PreparedStatement}
+     * @param <T>    The type of result to return
+     * @return The result returned by the {@code action}, or {@code null} if an exception occurs
+     */
+    public static <T> T runQuery(String query, Connection con, @NotNull SQLFunction<T> action) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(query)) {
             return action.apply(ps);
+        }
+    }
+
+    /**
+     * Executes a database query and returns a result using the provided {@link SQLFunction}.
+     *
+     * @param query  The SQL query string to execute
+     * @param action A lambda or method reference that performs operations on the {@link PreparedStatement}
+     */
+    public static void runQuery(String query, @NotNull SQLConsumer action) throws SQLException {
+        try (Connection con = Objects.requireNonNull(DatabaseConnection.getConnection()); PreparedStatement ps = con.prepareStatement(query)) {
+            action.apply(ps);
         }
     }
 
@@ -112,10 +160,10 @@ public class SqlHelper {
      * @param sql    The SQL statement to execute
      * @param action A lambda or method reference that performs the update using the {@link PreparedStatement}
      */
-    public static void runStatement(String sql, @NotNull SQLConsumer<PreparedStatement> action) throws SQLException {
+    public static void runStatement(String sql, @NotNull SQLConsumer action) throws SQLException {
         try (Connection con = Objects.requireNonNull(DatabaseConnection.getConnection());
              PreparedStatement ps = con.prepareStatement(sql)) {
-            action.accept(ps);
+            action.apply(ps);
             ps.executeUpdate();
         }
     }
