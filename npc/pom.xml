@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  The MIT License (MIT)
+  ~
+  ~  Copyright © 2021-2025, Alps BTE <bte.atchli@gmail.com>
+  ~
+  ~  Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~  of this software and associated documentation files (the "Software"), to deal
+  ~  in the Software without restriction, including without limitation the rights
+  ~  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~  copies of the Software, and to permit persons to whom the Software is
+  ~  furnished to do so, subject to the following conditions:
+  ~
+  ~  The above copyright notice and this permission notice shall be included in all
+  ~  copies or substantial portions of the Software.
+  ~
+  ~  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  ~  SOFTWARE.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -32,9 +56,14 @@
             <id>jitpack</id>
             <url>https://jitpack.io/</url>
         </repository>
-        <repository>  <!-- Decent Holograms item-nbt-api -->
+        <repository>  <!-- item-nbt-api (from Decent Holograms) -->
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
+        </repository>
+        <repository> <!-- FancyNpcs -->
+            <id>fancyinnovations-releases</id>
+            <name>FancyInnovations Repository</name>
+            <url>https://repo.fancyinnovations.com/releases</url>
         </repository>
     </repositories>
 
@@ -45,19 +74,19 @@
             <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- https://mvn.alps-bte.com/#browse/browse:alps-bte:com/alpsbte/alpslib/alpslib-hologram -->
             <groupId>com.alpsbte.alpslib</groupId>
             <artifactId>alpslib-hologram</artifactId>
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- https://modrinth.com/plugin/fancynpcs/versions?c=release -->
             <groupId>de.oliver</groupId>
             <artifactId>FancyNpcs</artifactId>
             <version>2.4.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- https://github.com/DecentSoftware-eu/DecentHolograms/releases -->
             <groupId>com.github.decentsoftware-eu</groupId>
             <artifactId>decentholograms</artifactId>
             <version>2.8.11</version>
@@ -70,7 +99,7 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
 
         <plugins>
-            <plugin>
+            <plugin> <!-- https://maven.apache.org/plugins/maven-shade-plugin/ -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
