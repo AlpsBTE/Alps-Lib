@@ -26,13 +26,12 @@ package com.alpsbte.alpslib.io.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import static net.kyori.adventure.text.Component.text;
 
 /**
  * Provides centralized management for the database connection.
@@ -45,15 +44,14 @@ public class DatabaseConnection {
     private DatabaseConnection() {}
 
     private static HikariDataSource hikari;
-    private static ComponentLogger logger;
+    private static Logger logger;
 
     /**
      * Initializes the connection pool with the given configuration data.
      *
      * @param config          The database configuration
-     * @param componentLogger Logger for status and error messages
      */
-    public static void initializeDatabase(@NotNull DatabaseSection config, ComponentLogger componentLogger) throws ClassNotFoundException {
+    public static void initializeDatabase(@NotNull DatabaseSection config, boolean enableLogging) throws ClassNotFoundException {
         Class.forName("org.mariadb.jdbc.Driver");
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(config.getUrl() + config.getDbName() + "?allowMultiQueries=true");
@@ -71,7 +69,10 @@ public class DatabaseConnection {
         hikariConfig.setPoolName(config.getPoolName());
 
         hikari = new HikariDataSource(hikariConfig);
-        logger = componentLogger;
+
+        if (enableLogging) {
+            logger = LoggerFactory.getLogger(DatabaseConnection.class);
+        }
     }
 
     /**
@@ -100,9 +101,9 @@ public class DatabaseConnection {
     public static void shutdown() {
         if (hikari != null) {
             hikari.close();
-            if (logger != null) logger.info(text("Database connection closed successfully."));
+            if (logger != null) logger.info("Database connection closed successfully.");
         } else {
-            if (logger != null) logger.warn(text("No database connection to close."));
+            if (logger != null) logger.warn("No database connection to close.");
         }
     }
 }
