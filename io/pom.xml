@@ -157,4 +157,11 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>alps-lib</id>
+            <url>https://mvn.alps-bte.com/repository/alps-lib/</url>
+        </repository>
+    </distributionManagement>
 </project>
