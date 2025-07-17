@@ -7,6 +7,8 @@ on:
     paths:
       - 'io/**'
       - '.github/workflows/deploy-io.yml'
+      - 'gradle/**'
+      - 'buildSrc/**'
 
 jobs:
   build-and-deploy:
@@ -21,13 +23,18 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-          cache: 'maven'
+          cache: 'gradle'
 
-      - name: Build project
-        run: mvn clean install -B
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-      - name: Deploy AlpsLib-IO to Maven repository
-        run: mvn deploy -pl io -B -s .github/maven-settings.xml
+      - name: Build with Gradle
+        run: ./gradlew :alpslib-io:build
+
+      # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
+      # the publishing section of your build.gradle
+      - name: Publish to GitHub Packages
+        run: ./gradlew :alpslib-io:publish
         env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+          alpsMavenUser: ${{ secrets.MAVEN_USERNAME }}
+          alpsMavenPassword: ${{ secrets.MAVEN_PASSWORD }}

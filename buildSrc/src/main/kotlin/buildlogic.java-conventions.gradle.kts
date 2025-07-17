@@ -45,11 +45,23 @@ repositories {
 group = "com.alpsbte.alpslib"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
+val alpsMavenUser: String by project
+val alpsMavenPassword: String by project
+
 // configure the project’s PublishingExtension, not the plugin DSL
 configure<PublishingExtension> {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username = alpsMavenUser
+                password = alpsMavenPassword
+            }
+            url = uri("https://mvn.alps-bte.com/repository/alps-bte/")
         }
     }
 }
