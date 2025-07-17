@@ -1,15 +1,15 @@
-name: Build and Deploy AlpsLib-IO
+name: Build and Deploy AlpsLib-Hologram
 
 on:
   workflow_dispatch:
   push:
     branches: [ main ]
     paths:
-      - 'io/build.gradle.kts'
-    #  - 'io/**'
-    #  - '.github/workflows/deploy-io.yml'
+      - 'hologram/build.gradle.kts'
+    #  - 'hologram/**'
+    #  - '.github/workflows/deploy-hologram.yml'
     #  - 'gradle/**'
-    #  - 'buildSrc/**'
+   #   - 'buildSrc/**'
 
 jobs:
   build-and-deploy:
@@ -30,12 +30,12 @@ jobs:
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: Build with Gradle
-        run: ./gradlew :alpslib-io:build
+        run: ./gradlew :alpslib-hologram:build
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
       - name: Publish to GitHub Packages
-        run: ./gradlew :alpslib-io:publish
+        run: ./gradlew :alpslib-hologram:publish
         env:
           alpsMavenUser: ${{ secrets.MAVEN_USERNAME }}
           alpsMavenPassword: ${{ secrets.MAVEN_PASSWORD }}
