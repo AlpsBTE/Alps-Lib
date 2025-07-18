@@ -5,7 +5,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'alpslib-libpsterra/build.gradle.kts'
+      - 'libpsterra/build.gradle.kts'
     #  - 'libpsterra/**'
     #  - '.github/workflows/deploy-libpsterra.yml'
     #  - 'gradle/**'
@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -27,7 +27,7 @@ jobs:
           cache: 'gradle'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
         run: ./gradlew :alpslib-libpsterra:build
@@ -37,5 +37,5 @@ jobs:
       - name: Publish to GitHub Packages
         run: ./gradlew :alpslib-libpsterra:publish
         env:
-          alpsMavenUser: ${{ secrets.MAVEN_USERNAME }}
-          alpsMavenPassword: ${{ secrets.MAVEN_PASSWORD }}
+          ORG_GRADLE_PROJECT_alpsMavenUser: ${{ secrets.MAVEN_USERNAME }}
+          ORG_GRADLE_PROJECT_alpsMavenPassword: ${{ secrets.MAVEN_PASSWORD }}

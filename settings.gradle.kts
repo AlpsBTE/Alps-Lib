@@ -13,4 +13,3 @@ project(":alpslib-hologram").projectDir = file("hologram")
 project(":alpslib-utils").projectDir = file("utils")
 project(":alpslib-libpsterra").projectDir = file("libpsterra")
 project(":alpslib-io").projectDir = file("io")
-

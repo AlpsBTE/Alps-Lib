@@ -8,7 +8,7 @@ plugins {
 
 dependencies {
     compileOnly(libs.io.papermc.paper.paper.api)
-    compileOnly(libs.com.github.decentsoftware.eu.decentholograms.x1)
+    compileOnly(libs.com.github.decentsoftware.eu.decentholograms)
 }
 
 description = "AlpsLib-Hologram"

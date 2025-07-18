@@ -10,8 +10,8 @@ plugins {
 dependencies {
     compileOnly(libs.io.papermc.paper.paper.api)
     compileOnly(libs.commons.io.commons.io)
-    compileOnly(libs.org.jetbrains.annotations.x1)
-    compileOnly(libs.com.zaxxer.hikaricp.x1)
+    compileOnly(libs.org.jetbrains.annotations)
+    compileOnly(libs.com.zaxxer.hikaricp)
     compileOnly(project(":alpslib-utils"))
 }
 

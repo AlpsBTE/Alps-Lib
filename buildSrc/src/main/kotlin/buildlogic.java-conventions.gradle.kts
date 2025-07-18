@@ -34,10 +34,6 @@ repositories {
     }
 
     maven {
-        url = uri("https://jitpack.io")
-    }
-
-    maven {
         url = uri("https://maven.enginehub.org/repo/")
     }
 }
@@ -45,8 +41,8 @@ repositories {
 group = "com.alpsbte.alpslib"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val alpsMavenUser: String by project
-val alpsMavenPassword: String by project
+val ORG_GRADLE_PROJECT_alpsMavenUser: String? = project.findProperty("ORG_GRADLE_PROJECT_alpsMavenUser") as String?
+val ORG_GRADLE_PROJECT_alpsMavenPassword: String? = project.findProperty("ORG_GRADLE_PROJECT_alpsMavenPassword") as String?
 
 // configure the project’s PublishingExtension, not the plugin DSL
 configure<PublishingExtension> {
@@ -58,8 +54,8 @@ configure<PublishingExtension> {
     repositories {
         maven {
             credentials {
-                username = alpsMavenUser
-                password = alpsMavenPassword
+                username = ORG_GRADLE_PROJECT_alpsMavenUser
+                password = ORG_GRADLE_PROJECT_alpsMavenPassword
             }
             url = uri("https://mvn.alps-bte.com/repository/alps-bte/")
         }

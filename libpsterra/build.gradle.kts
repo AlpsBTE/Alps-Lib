@@ -17,7 +17,7 @@ dependencies {
     api(libs.commons.net.commons.net)
     api(libs.com.github.mwiede.jsch)
     api(libs.org.jetbrains.annotations)
-    api(libs.com.squareup.okhttp3.okhttp)
+    api(libs.com.squareup.okhttp3.okhttp.jvm)
     compileOnly(libs.com.sk89q.worldedit.worldedit.bukkit)
     compileOnly(libs.com.arcaniax.headdatabase.api)
     compileOnly(libs.commons.io.commons.io)
