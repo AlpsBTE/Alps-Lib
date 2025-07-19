@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
+        </processorPath>
+        <module name="alpslib.alpslib-io.test" />
+        <module name="alpslib.alpslib-io.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="alpslib-hologram" target="1.8" />
+      <module name="alpslib-http" target="1.8" />
+      <module name="alpslib-io" target="1.8" />
+      <module name="alpslib-libpsterra" target="1.8" />
+      <module name="alpslib-npc" target="21" />
+      <module name="alpslib-utils" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="alpslib.alpslib-io" options="-Xlint:-processing" />
+      <module name="alpslib.alpslib-io.main" options="-Xlint:-processing" />
+      <module name="alpslib.alpslib-io.test" options="-Xlint:-processing" />
+    </option>
+  </component>
+</project>
