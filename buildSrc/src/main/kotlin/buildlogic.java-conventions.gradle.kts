@@ -39,7 +39,7 @@ repositories {
 }
 
 group = "com.alpsbte.alpslib"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 val ORG_GRADLE_PROJECT_alpsMavenUser: String? = project.findProperty("ORG_GRADLE_PROJECT_alpsMavenUser") as String?
 val ORG_GRADLE_PROJECT_alpsMavenPassword: String? = project.findProperty("ORG_GRADLE_PROJECT_alpsMavenPassword") as String?
@@ -62,3 +62,10 @@ configure<PublishingExtension> {
     }
 }
 
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Javadoc> {
+    options.encoding = "UTF-8"
+}

@@ -4,6 +4,7 @@
 
 plugins {
     id("buildlogic.java-conventions")
+    alias(libs.plugins.gradleup.shadow)
 }
 
 dependencies {
@@ -14,3 +15,25 @@ dependencies {
 
 description = "AlpsLib-Utils"
 version = "1.3.5"
+
+publishing {
+    publications {
+        create<MavenPublication>("shadow") {
+            from(components["shadow"])
+        }
+    }
+}
+
+tasks.shadowJar {
+    exclude("org/slf4j/**")
+    exclude("org/jetbrains/annotations/**")
+    archiveClassifier = ""
+}
+
+tasks.assemble {
+    dependsOn(tasks.shadowJar) // Ensure that the shadowJar task runs before the build task
+}
+
+tasks.jar {
+    enabled = false // Disable the default jar task since we are using shadowJar
+}

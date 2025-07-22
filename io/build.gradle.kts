@@ -4,7 +4,7 @@
 
 plugins {
     id("buildlogic.java-conventions")
-    id("io.freefair.lombok") version "8.14"
+    alias(libs.plugins.freefair.lombok)
 }
 
 dependencies {
