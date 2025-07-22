@@ -44,13 +44,18 @@ java.sourceCompatibility = JavaVersion.VERSION_21
 val ORG_GRADLE_PROJECT_alpsMavenUser: String? = project.findProperty("alpsMavenUser") as String?
 val ORG_GRADLE_PROJECT_alpsMavenPassword: String? = project.findProperty("alpsMavenPassword") as String?
 
-// configure the project’s PublishingExtension, not the plugin DSL
-configure<PublishingExtension> {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
+project.afterEvaluate {
+    (project.extensions.getByName("publishing") as PublishingExtension).publications {
+        if (tasks.jar.get().enabled) {
+            create<MavenPublication>("maven") {
+                from(project.components["java"])
+            }
         }
     }
+}
+
+
+configure<PublishingExtension> {
     repositories {
         maven {
             credentials {

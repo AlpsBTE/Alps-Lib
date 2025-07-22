@@ -8,7 +8,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":alpslib-utils"))
+    api(project(path = ":alpslib-utils", configuration = "shadow"))
     api(project(":alpslib-io"))
     api(libs.com.alpsbte.canvas)
     api(libs.com.github.cryptomorin.xseries)
