@@ -20,6 +20,7 @@ org-jetbrains-annotations = "26.0.2" # https://central.sonatype.com/artifact/org
 org-junit-jupiter-junit-jupiter-engine = "5.13.3" # https://central.sonatype.com/artifact/org.junit.jupiter/junit-jupiter-engine
 org-junit-platform-junit-platform-runner = "1.13.3" # https://central.sonatype.com/artifact/org.junit.platform/junit-platform-runner
 org-mariadb-jdbc-mariadb-java-client = "3.5.4" # https://central.sonatype.com/artifact/org.mariadb.jdbc/mariadb-java-client
+com-intellectualsites-bom-bom-newest = "1.55" # Ref: https://github.com/IntellectualSites/bom
 
 [libraries]
 com-alpsbte-canvas = { module = "com.alpsbte:canvas", version.ref = "com-alpsbte-canvas" }
@@ -27,7 +28,6 @@ com-arcaniax-headdatabase-api = { module = "com.arcaniax:HeadDatabase-API", vers
 com-github-cryptomorin-xseries = { module = "com.github.cryptomorin:XSeries", version.ref = "com-github-cryptomorin-xseries" }
 com-github-decentsoftware-eu-decentholograms = { module = "com.github.decentsoftware-eu:decentholograms", version.ref = "com-github-decentsoftware-eu-decentholograms" }
 com-github-mwiede-jsch = { module = "com.github.mwiede:jsch", version.ref = "com-github-mwiede-jsch" }
-com-sk89q-worldedit-worldedit-bukkit = { module = "com.sk89q.worldedit:worldedit-bukkit", version.ref = "com-sk89q-worldedit-worldedit-bukkit" }
 com-squareup-okhttp3-okhttp-jvm = { module = "com.squareup.okhttp3:okhttp-jvm", version.ref = "com-squareup-okhttp3-okhttp-jvm" }
 com-zaxxer-hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "com-zaxxer-hikaricp" }
 commons-io-commons-io = { module = "commons-io:commons-io", version.ref = "commons-io-commons-io" }
@@ -40,6 +40,7 @@ org-jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref 
 org-junit-jupiter-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "org-junit-jupiter-junit-jupiter-engine" }
 org-junit-platform-junit-platform-runner = { module = "org.junit.platform:junit-platform-runner", version.ref = "org-junit-platform-junit-platform-runner" }
 org-mariadb-jdbc-mariadb-java-client = { module = "org.mariadb.jdbc:mariadb-java-client", version.ref = "org-mariadb-jdbc-mariadb-java-client" }
+com-intellectualsites-bom-bom-newest = { module = "com.intellectualsites.bom:bom-newest", version.ref = "com-intellectualsites-bom-bom-newest" }
 
 [plugins]
 gradleup-shadow      = { id = "com.gradleup.shadow",    version = "9.0.0-rc1" }

@@ -19,7 +19,9 @@ dependencies {
     api(libs.com.github.mwiede.jsch)
     api(libs.org.jetbrains.annotations)
     api(libs.com.squareup.okhttp3.okhttp.jvm)
-    compileOnly(libs.com.sk89q.worldedit.worldedit.bukkit)
+    compileOnly(platform(libs.com.intellectualsites.bom.bom.newest))
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
+    compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit") { isTransitive = false }
     compileOnly(libs.com.arcaniax.headdatabase.api)
     compileOnly(libs.commons.io.commons.io)
     compileOnly(libs.io.papermc.paper.paper.api)
