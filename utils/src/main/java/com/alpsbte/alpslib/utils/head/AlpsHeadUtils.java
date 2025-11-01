@@ -6,7 +6,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class AlpsHeadUtils {
     private static HeadDatabaseAPI headDatabaseAPI;
 

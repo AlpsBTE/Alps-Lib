@@ -16,6 +16,7 @@ import java.util.Objects;
 
 import static com.alpsbte.alpslib.utils.item.LoreBuilder.LORE_COMPONENT;
 
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class ItemBuilder {
     private final ItemStack item;
     protected final ItemMeta itemMeta;

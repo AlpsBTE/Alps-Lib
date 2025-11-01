@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 @Deprecated
 public class LegacyLoreBuilder {
     public static String LINE_BAKER = "%newline%";

@@ -12,6 +12,7 @@ import static net.kyori.adventure.text.Component.empty;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.TextDecoration.ITALIC;
 
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class LoreBuilder {
     public static final TextComponent LORE_COMPONENT = empty().decoration(ITALIC, TextDecoration.State.FALSE);
     public static int MAX_LORE_LINE_LENGTH = 40;

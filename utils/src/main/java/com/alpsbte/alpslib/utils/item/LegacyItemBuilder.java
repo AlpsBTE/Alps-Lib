@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 @Deprecated
 public class LegacyItemBuilder {
 
