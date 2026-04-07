@@ -4,6 +4,8 @@ import com.alpsbte.alpslib.utils.AlpsUtils;
 import com.cryptomorin.xseries.XMaterial;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import lombok.Getter;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
@@ -68,8 +70,11 @@ public class AlpsHeadUtils {
         SkullMeta meta = (SkullMeta) skull.getItemMeta();
         if (meta == null) return skull;
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUUID));
-        meta.lore(null);
         skull.setItemMeta(meta);
+
+        // remove "Dynamic" text from dynamic player heads
+        //noinspection UnstableApiUsage
+        skull.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.PROFILE).build());
         return skull;
     }
 
