@@ -8,6 +8,7 @@ import clipper2.offset.EndType;
 import clipper2.offset.JoinType;
 import com.cryptomorin.xseries.XMaterial;
 import com.fastasyncworldedit.core.limit.FaweLimit;
+import com.fastasyncworldedit.core.registry.state.PropertyKey;
 import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extension.factory.MaskFactory;
@@ -36,6 +37,7 @@ import com.sk89q.worldedit.regions.selector.CuboidRegionSelector;
 import com.sk89q.worldedit.regions.selector.Polygonal2DRegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.SessionManager;
+import com.sk89q.worldedit.util.Direction;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
@@ -217,11 +219,11 @@ public class GeneratorUtils {
 
 
 
-    
+
     /*=============================================**
-    
+
                 SCRIPT HELPER FUNCTIONS
-    
+
      **=============================================*/
 
     /**
@@ -291,7 +293,54 @@ public class GeneratorUtils {
 
         return blockStates;
     }
-    
+
+    /**
+     * Returns the default block state of a directional block with the facing property set.
+     *
+     * @param blockType The block type to create the state from
+     * @param facing The facing direction to apply
+     * @return The block state with the facing property set
+     */
+    public static BlockState getBlockStateWithFacing(BlockType blockType, Direction facing) {
+        if (blockType == null || facing == null) return null;
+
+        return blockType.getDefaultState().with(PropertyKey.FACING, facing);
+    }
+
+    /**
+     * Returns the cardinal facing from one vector to another.
+     *
+     * @param from The start vector
+     * @param to The target vector
+     * @param fallbackFacing The direction to use when the vectors have no clear horizontal direction
+     * @return The best matching cardinal direction
+     */
+    public static Direction getFacing(Vector from, Vector to, Direction fallbackFacing) {
+        if (from == null || to == null) return fallbackFacing;
+
+        return getFacing(to.getBlockX() - from.getBlockX(), to.getBlockZ() - from.getBlockZ(), fallbackFacing);
+    }
+
+    /**
+     * Returns the cardinal facing for a horizontal delta.
+     *
+     * @param deltaX The X delta
+     * @param deltaZ The Z delta
+     * @param fallbackFacing The direction to use when the delta has no dominant horizontal axis
+     * @return The best matching cardinal direction
+     */
+    public static Direction getFacing(int deltaX, int deltaZ, Direction fallbackFacing) {
+        if (deltaX == 0 && deltaZ == 0) return fallbackFacing;
+
+        if (Math.abs(deltaX) > Math.abs(deltaZ)) return deltaX >= 0 ? Direction.EAST : Direction.WEST;
+
+        if (Math.abs(deltaZ) > Math.abs(deltaX)) return deltaZ >= 0 ? Direction.SOUTH : Direction.NORTH;
+
+        if (fallbackFacing != null) return fallbackFacing;
+
+        return deltaZ >= 0 ? Direction.SOUTH : Direction.NORTH;
+    }
+
 
 
     /*=============================================**
@@ -316,17 +365,17 @@ public class GeneratorUtils {
     }
 
 
-    
-    
-    
+
+
+
     /*=============================================**
-    
+
                WORLDEDIT REGION FUNCTIONS
-    
+
      **=============================================*/
-    
-    
-    
+
+
+
     /**
      * Returns the WorldEdit selection Vector from a player no matter which type of selection the player made.
      *
@@ -418,9 +467,9 @@ public class GeneratorUtils {
 
     /**
      * Returns the minimum and maximum points of a region as a Vector array.
-     * 
+     *
      * @param region The region to get the minimum and maximum points from
-     * @return A Vector array with the minimum vector at index 0 and the maximum vector at index 1             
+     * @return A Vector array with the minimum vector at index 0 and the maximum vector at index 1
      */
     public static Vector[] getMinMaxPoints(Region region){
         Vector[] minMax = new Vector[2];
@@ -520,7 +569,7 @@ public class GeneratorUtils {
                 for (Block block : block1D) {
                     ItemStack item = xMaterial.parseItem();
                     if (block != null && item != null && block.getType() == item.getType())
-                            amountFound++;
+                        amountFound++;
                 }
 
         return amountFound >= requiredAmount;
@@ -664,19 +713,19 @@ public class GeneratorUtils {
         return null;
     }
 
-    
+
 
 
 
 
 
     /*=============================================**
-    
+
                 WORLDEDIT OPERATION FUNCTIONS
-    
+
      **=============================================*/
-    
-    
+
+
 
     /**
      * Prepares a script session by expanding the selection, removing non-solid blocks and ignored materials.
@@ -705,7 +754,7 @@ public class GeneratorUtils {
 
         if(removeNonSolidBlocks)
             replaceBlocksWithMasks(localSession, actor, world, Collections.singletonList("!#solid"), null, new BlockState[]{air.getDefaultState()}, 1)
-                .join();
+                    .join();
 
         if(removeIgnoredMaterials) {
             Material[] materials = getIgnoredMaterials();
@@ -718,7 +767,7 @@ public class GeneratorUtils {
                 List<BlockState> blockStates = blockType.getAllStates();
                 BlockState[] blockStatesArray = blockStates.toArray(new BlockState[0]);
                 replaceBlocks(localSession, actor, world, blockStatesArray, new BlockState[]{air.getDefaultState()})
-                    .join();
+                        .join();
             }
         }
 
@@ -730,7 +779,7 @@ public class GeneratorUtils {
         return regionBlocks;
     }
 
-    
+
 
     /** Analyzes a region and returns a three-dimensional array of all blocks in the region.
      * The size of the array is defined by the width, height and length of the region from WorldEdit of the player.
@@ -889,7 +938,7 @@ public class GeneratorUtils {
      */
     public static CompletableFuture<Void> replaceBlocksWithMasks(LocalSession localSession, Actor actor, com.sk89q.worldedit.world.World weWorld, List<String> masks, BlockState from, BlockState[] to, int iterations) {
         if(to == null || to.length == 0)
-                throw new IllegalArgumentException("BlockState[] to is empty");
+            throw new IllegalArgumentException("BlockState[] to is empty");
 
         CompletableFuture<Void> future = new CompletableFuture<>();
         Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
@@ -1378,11 +1427,11 @@ public class GeneratorUtils {
     }
 
     /**
-    * Redoes the last action of a LocalSession.
-    * @param session The local session to redo the last action of
-    * @param player The player who created the structure
-    * @param amount The amount of actions to redo
-    */
+     * Redoes the last action of a LocalSession.
+     * @param session The local session to redo the last action of
+     * @param player The player who created the structure
+     * @param amount The amount of actions to redo
+     */
     public static void redo(LocalSession session, Player player, Actor actor, int amount){
         com.sk89q.worldedit.entity.Player wePlayer = BukkitAdapter.adapt(player);
 
@@ -1730,7 +1779,7 @@ public class GeneratorUtils {
 
             return resultVectors.get(longestPathIndex);
 
-        // Otherwise, return all paths combined into one
+            // Otherwise, return all paths combined into one
         }else{
             List<Vector> result = new ArrayList<>();
             for(List<Vector> vectorList : resultVectors)
