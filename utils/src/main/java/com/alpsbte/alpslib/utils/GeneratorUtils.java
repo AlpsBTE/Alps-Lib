@@ -115,6 +115,7 @@ import java.util.concurrent.CompletableFuture;
  * <br>• {@link #drawLineWithMasks(LocalSession, Actor, com.sk89q.worldedit.world.World, Block[][][], List, Vector, Vector, BlockState[], boolean)}
  * <br>• {@link #pasteSchematicWithMasks(LocalSession, Actor, com.sk89q.worldedit.world.World, Block[][][], List, String, Location, double)}
  * <br>• {@link #pasteSchematic(LocalSession, Actor, com.sk89q.worldedit.world.World, Block[][][], String, Location, double)}
+ * <br>• {@link #setBlockStatesAtPositions(LocalSession, Actor, com.sk89q.worldedit.world.World, List, List)}
  * <br>• {@link #expandSelection(LocalSession, Vector)}
  * <br>• {@link #clearHistory(LocalSession)}
  * <br>• {@link #undo(LocalSession, Player, Actor, int)}
@@ -124,6 +125,12 @@ import java.util.concurrent.CompletableFuture;
  *
  * <br><br><b>Vector Helper Functions</b>:
  * <br>• {@link #adjustHeight(List, Block[][][])}
+ * <br>• {@link #toBlockVector(Vector)}
+ * <br>• {@link #copyToBlockVectors(List)}
+ * <br>• {@link #createShortestBlockPath(List)}
+ * <br>• {@link #appendShortestBlockLine(List, Vector, Vector)}
+ * <br>• {@link #removeOrthogonalCorners(List)}
+ * <br>• {@link #createBoundsSelectionPoints(List, int)}
  * <br>• {@link #populatePoints(List, int)}
  * <br>• {@link #reducePoints(List, int, int)}
  * <br>• {@link #extendPolyLine(List)}
@@ -1493,6 +1500,53 @@ public class GeneratorUtils {
         editSession.close();
     }
 
+    /**
+     * Sets individual block states at exact positions and stores the operation in the player's WorldEdit history.
+     *
+     * @param localSession The WorldEdit local session
+     * @param actor        The WorldEdit actor
+     * @param weWorld      The WorldEdit world
+     * @param positions    The block positions to change
+     * @param blockStates  The block states to place at the matching positions
+     * @return A CompletableFuture that completes when the operation is finished
+     */
+    public static CompletableFuture<Void> setBlockStatesAtPositions(
+            LocalSession localSession,
+            Actor actor,
+            com.sk89q.worldedit.world.World weWorld,
+            List<Vector> positions,
+            List<BlockState> blockStates
+    ) {
+        if (positions.size() != blockStates.size())
+            throw new IllegalArgumentException("Position and BlockState lists must have the same size");
+
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
+            try (EditSession editSession = WorldEdit.getInstance().newEditSession(weWorld)) {
+                for (int index = 0; index < positions.size(); index++) {
+                    BlockState blockState = blockStates.get(index);
+
+                    if (blockState == null)
+                        continue;
+
+                    Vector position = positions.get(index);
+                    editSession.setBlock(
+                            BlockVector3.at(position.getBlockX(), position.getBlockY(), position.getBlockZ()),
+                            (Pattern) blockState
+                    );
+                }
+
+                saveEditSession(editSession, localSession, actor);
+                future.complete(null);
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        });
+
+        return future;
+    }
+
 
 
 
@@ -1516,6 +1570,166 @@ public class GeneratorUtils {
     public static void adjustHeight(List<Vector> points, Block[][][] blocks){
         for (Vector point : points)
             point.setY(getMaxHeight(blocks, point.getBlockX(), point.getBlockZ(), getIgnoredMaterials()));
+    }
+
+    /**
+     * Returns a new vector snapped to integer block coordinates.
+     *
+     * @param vector The vector to snap
+     * @return A vector using the input's block coordinates
+     */
+    public static Vector toBlockVector(Vector vector) {
+        return new Vector(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+    }
+
+    /**
+     * Copies the given vectors and snaps every copy to integer block coordinates.
+     *
+     * @param vectors The vectors to copy
+     * @return A copied list using block coordinates
+     */
+    public static List<Vector> copyToBlockVectors(List<Vector> vectors) {
+        List<Vector> copiedVectors = new ArrayList<>();
+
+        for (Vector vector : vectors)
+            copiedVectors.add(toBlockVector(vector));
+
+        return copiedVectors;
+    }
+
+    /**
+     * Checks whether two vectors point to the same block coordinate.
+     *
+     * @param first  The first vector
+     * @param second The second vector
+     * @return Whether both vectors have the same block coordinates
+     */
+    public static boolean isSameBlock(Vector first, Vector second) {
+        return first.getBlockX() == second.getBlockX()
+                && first.getBlockY() == second.getBlockY()
+                && first.getBlockZ() == second.getBlockZ();
+    }
+
+    /**
+     * Creates a block-by-block path through the given control points.
+     *
+     * @param points The control points to connect
+     * @return The shortest block path connecting the points
+     */
+    public static List<Vector> createShortestBlockPath(List<Vector> points) {
+        List<Vector> path = new ArrayList<>();
+
+        if (points.isEmpty())
+            return path;
+
+        path.add(toBlockVector(points.getFirst()));
+
+        for (int index = 0; index < points.size() - 1; index++)
+            appendShortestBlockLine(path, points.get(index), points.get(index + 1));
+
+        return path;
+    }
+
+    /**
+     * Appends the shortest horizontal block line between two points to an existing path.
+     *
+     * @param path  The path to append to
+     * @param start The start point
+     * @param end   The end point
+     */
+    public static void appendShortestBlockLine(List<Vector> path, Vector start, Vector end) {
+        int deltaX = end.getBlockX() - start.getBlockX();
+        int deltaY = end.getBlockY() - start.getBlockY();
+        int deltaZ = end.getBlockZ() - start.getBlockZ();
+        int horizontalSteps = Math.max(Math.abs(deltaX), Math.abs(deltaZ));
+
+        if (horizontalSteps == 0) {
+            Vector blockPoint = toBlockVector(end);
+
+            if (path.isEmpty())
+                path.add(blockPoint);
+            else
+                path.set(path.size() - 1, blockPoint);
+
+            return;
+        }
+
+        for (int step = 1; step <= horizontalSteps; step++) {
+            double progress = step / (double) horizontalSteps;
+            path.add(new Vector(
+                    start.getBlockX() + (int) Math.round(deltaX * progress),
+                    start.getBlockY() + (int) Math.round(deltaY * progress),
+                    start.getBlockZ() + (int) Math.round(deltaZ * progress)
+            ));
+        }
+    }
+
+    /**
+     * Removes orthogonal corner points from a block path.
+     *
+     * @param path The path to smooth
+     * @return A path without blocky right-angle corner duplicates
+     */
+    public static List<Vector> removeOrthogonalCorners(List<Vector> path) {
+        List<Vector> result = new ArrayList<>();
+
+        for (int index = 0; index < path.size(); index++) {
+            if (index > 0 && index < path.size() - 1 && isOrthogonalCorner(path.get(index - 1), path.get(index), path.get(index + 1)))
+                continue;
+
+            result.add(path.get(index));
+        }
+
+        return result;
+    }
+
+    /**
+     * Checks whether a point is a right-angle corner between its neighbors.
+     *
+     * @param previous The previous point
+     * @param current  The current point
+     * @param next     The next point
+     * @return Whether the current point is an orthogonal corner
+     */
+    public static boolean isOrthogonalCorner(Vector previous, Vector current, Vector next) {
+        int previousDx = Integer.compare(current.getBlockX() - previous.getBlockX(), 0);
+        int previousDz = Integer.compare(current.getBlockZ() - previous.getBlockZ(), 0);
+        int nextDx = Integer.compare(next.getBlockX() - current.getBlockX(), 0);
+        int nextDz = Integer.compare(next.getBlockZ() - current.getBlockZ(), 0);
+
+        return (previousDx != 0 || previousDz != 0)
+                && (nextDx != 0 || nextDz != 0)
+                && previousDx * nextDx + previousDz * nextDz == 0
+                && previousDx != nextDx
+                && previousDz != nextDz;
+    }
+
+    /**
+     * Creates a flat rectangular polygon that bounds the given points with padding.
+     *
+     * @param points  The points to bound
+     * @param padding The horizontal padding around the bounds
+     * @return Four points describing the padded bounds
+     */
+    public static List<Vector> createBoundsSelectionPoints(List<Vector> points, int padding) {
+        int minX = Integer.MAX_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxZ = Integer.MIN_VALUE;
+
+        for (Vector point : points) {
+            minX = Math.min(minX, point.getBlockX() - padding);
+            minZ = Math.min(minZ, point.getBlockZ() - padding);
+            maxX = Math.max(maxX, point.getBlockX() + padding);
+            maxZ = Math.max(maxZ, point.getBlockZ() + padding);
+        }
+
+        return List.of(
+                new Vector(minX, 0, minZ),
+                new Vector(maxX, 0, minZ),
+                new Vector(maxX, 0, maxZ),
+                new Vector(minX, 0, maxZ)
+        );
     }
 
     /** As long as two neighboring vectors are further than a given distance of blocks apart, add a new vector in between them
@@ -1832,7 +2046,7 @@ public class GeneratorUtils {
      * @param vectors The list of vectors to get the maximum height of
      * @return The maximum height
      */
-    private static int getMaxHeight(List<Vector> vectors){
+    public static int getMaxHeight(List<Vector> vectors){
         int maxHeight = Integer.MIN_VALUE;
         for(Vector vector : vectors)
             maxHeight = Math.max(maxHeight, vector.getBlockY());
