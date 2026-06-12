@@ -14,4 +14,4 @@ dependencies {
 }
 
 description = "AlpsLib-Utils"
-version = "1.4.6"
+version = "1.5.0"
