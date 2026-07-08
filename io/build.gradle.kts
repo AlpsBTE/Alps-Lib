@@ -10,6 +10,7 @@ dependencies {
     compileOnly(libs.com.zaxxer.hikaricp)
     compileOnly(project(":alpslib-utils"))
     compileOnly(libs.configurate.yaml)
+    compileOnly("space.arim.dazzleconf:dazzleconf-yaml:2.0.0-M1")
 }
 
 description = "AlpsLib-IO"
