@@ -1,7 +1,6 @@
 package com.alpsbte.alpslib.utils.item;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -27,38 +26,17 @@ public class ItemBuilder {
         this.item = item;
     }
 
-    @Deprecated
-    public ItemBuilder(Material material, int amount, byte color) {
-        item = new ItemStack(material, amount, color);
-        itemMeta = item.getItemMeta();
-        if (itemMeta != null) itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-    }
-
     public ItemBuilder(Material material) {
-        this(material, 1, (byte) 0);
+        this(material, 1);
     }
 
     public ItemBuilder(Material material, int amount) {
-        this(material, amount, (byte) 0);
-    }
-
-    @Deprecated
-    public ItemBuilder setName(String name) {
-        itemMeta.displayName(LORE_COMPONENT.append(LegacyComponentSerializer.legacySection().deserialize(name)));
-        return this;
-    }
+        item = new ItemStack(material, amount);
+        itemMeta = item.getItemMeta();
+        if (itemMeta != null) itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);    }
 
     public ItemBuilder setName(Component component) {
         itemMeta.displayName(LORE_COMPONENT.append(component));
-        return this;
-    }
-
-    @Deprecated(since = "1.1.0", forRemoval = true)
-    public ItemBuilder setStringLore(@NotNull List<String> lore) {
-        List<Component> components = new ArrayList<>();
-        for (String loreStr : lore)
-            components.add(LORE_COMPONENT.append(LegacyComponentSerializer.legacySection().deserialize(loreStr)));
-        itemMeta.lore(components);
         return this;
     }
 
@@ -78,6 +56,11 @@ public class ItemBuilder {
         return this;
     }
 
+
+    /**
+     * @deprecated since 1.5.1, use {@link #setItemModel(String)} instead - will be removed once <=1.21.4 is not supported anymore.
+     */
+    @Deprecated(since = "1.5.1")
     public ItemBuilder setItemModel(int model) {
         if (model != 0) itemMeta.setCustomModelData(model);
         return this;

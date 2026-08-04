@@ -6,6 +6,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
+/**
+ * This class is used to manage configuration files for a plugin.
+ * @deprecated This class is deprecated and will be removed in future versions. Use DazzleConf instead.
+ */
+@Deprecated(forRemoval = true, since = "1.2.6")
 public class ConfigurationUtil extends YamlFileFactory {
     private static final String CONFIG_VERSION_PATH = "config-version";
     public ConfigFile[] configs;

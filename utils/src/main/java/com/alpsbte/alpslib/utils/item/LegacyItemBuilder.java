@@ -9,7 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.List;
 
 @SuppressWarnings("unused")
-@Deprecated
+@Deprecated(forRemoval = true)
 public class LegacyItemBuilder {
 
     private final ItemStack item;

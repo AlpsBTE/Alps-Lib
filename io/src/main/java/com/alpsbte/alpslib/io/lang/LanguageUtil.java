@@ -13,6 +13,11 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class is used to manage configuration files for a plugin.
+ * @deprecated This class is deprecated and will be removed in future versions. Use DazzleConf/LangLibs/Adventure instead.
+ */
+@Deprecated(forRemoval = true, since = "1.2.6")
 public class LanguageUtil extends YamlFileFactory {
     private static final String CONFIG_VERSION_PATH = "config-version";
     private final static String LANG_NAME_PATH = "lang.name";

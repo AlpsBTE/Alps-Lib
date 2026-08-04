@@ -133,11 +133,13 @@ public final class AlpsUtils {
     /**
      * Returns the highest block at the given coordinates
      * Only supports worlds with a height of 256
+     * @deprecated Use {@link World#getHighestBlockYAt(int, int)} instead (Heightmap)
      * @param world The world
      * @param x The x coordinate
      * @param z The z coordinate
      * @return The highest block at the given coordinates
      */
+    @Deprecated(since = "1.5.1", forRemoval = true)
     public static int getHighestBlockYAt(World world, int x, int z) {
         for (int i = 256; i > 0; i--) {
             if (world.getBlockAt(x, i, z).getType() != Material.AIR) {
