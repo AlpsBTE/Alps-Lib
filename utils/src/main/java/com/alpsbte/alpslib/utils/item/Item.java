@@ -1,7 +1,10 @@
 package com.alpsbte.alpslib.utils.item;
 
+import com.alpsbte.alpslib.utils.AlpsUtils;
 import com.alpsbte.alpslib.utils.ChatHelper;
 import com.alpsbte.alpslib.utils.head.AlpsHeadUtils;
+import com.alpsbte.alpslib.utils.head.HeadLookupService;
+import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.profiles.builder.XSkull;
 import com.cryptomorin.xseries.profiles.objects.Profileable;
@@ -527,9 +530,10 @@ public class Item {
         return createCustomHeadBase64(encodedData, name, lore);
     }
 
-    public static @Nullable ItemStack createCustomHeadBase64(String base64, String name, List<String> lore) {
-        if (nonPlayerSkulls.containsKey(base64 + name + lore))
-            return nonPlayerSkulls.get(base64 + name + lore);
+    public static @Nullable ItemStack createCustomHeadBase64(@NotNull String base64, @Nullable String name, @Nullable List<String> lore) {
+        String cacheKey = base64 + "\u0000" + (name == null ? "" : name) + "\u0000" + (lore == null ? "" : String.join("\n", lore));
+        if (nonPlayerSkulls.containsKey(cacheKey))
+            return nonPlayerSkulls.get(cacheKey);
 
         ItemStack head = XMaterial.PLAYER_HEAD.parseItem();
 
@@ -537,11 +541,15 @@ public class Item {
             return null;
 
         ItemMeta meta = XSkull.of(head).profile(Profileable.detect(base64)).apply().getItemMeta();
-        meta.setDisplayName(name);
-        meta.setLore(lore);
+        if (name != null) {
+            meta.setDisplayName(name);
+        }
+        if (lore != null) {
+            meta.setLore(lore);
+        }
         head.setItemMeta(meta);
 
-        nonPlayerSkulls.put(base64 + name + lore, head);
+        nonPlayerSkulls.put(cacheKey, head);
 
         return head;
     }
@@ -550,6 +558,50 @@ public class Item {
     // SECTION: Alps Configured Items
     // ======================================
 
+    /**
+     * Builds an item from a configured material string, optionally applying a custom model/item model.
+     * <p>
+     * Supported {@code material} formats:
+     * <ul>
+     *   <li>{@code head(<id>)} – resolves a custom head through {@code headLookupService}
+     *       (numeric HeadDatabase / HeadDB ids)</li>
+     *   <li>any Bukkit {@link Material} name (case-insensitive), e.g. {@code GRASS_BLOCK}</li>
+     * </ul>
+     * Falls back to a skeleton skull when a head cannot be resolved (missing lookup service,
+     * non-numeric id, or provider miss), and to {@link Material#BARRIER} when the material name
+     * is unknown.
+     *
+     * @param material           material name or {@code head(<id>)} expression
+     * @param customModelData    custom model / item model value passed to {@link ItemBuilder#setItemModel(Object)},
+     *                           or {@code null} to skip
+     * @param headLookupService  service used for {@code head(...)} materials; may be {@code null}
+     * @return the configured item stack
+     */
+    public static @NotNull ItemStack getConfiguredItem(
+            @NotNull String material,
+            @Nullable Object customModelData,
+            @Nullable HeadLookupService headLookupService
+    ) {
+        ItemStack base;
+        if (material.startsWith("head(") && material.endsWith(")")) {
+            if (headLookupService == null) return XMaterial.SKELETON_SKULL.parseItem();
+            String headId = material.substring(material.indexOf("(") + 1, material.lastIndexOf(")"));
+            if (AlpsUtils.tryParseInt(headId) == null) return XMaterial.SKELETON_SKULL.parseItem();
+            base = headLookupService.getCustomHead(headId);
+        } else {
+            Material mat = Material.getMaterial(material.toUpperCase(Locale.ROOT));
+            base = new ItemStack(mat == null ? Material.BARRIER : mat);
+        }
+        ItemBuilder builder = new ItemBuilder(base);
+        if (customModelData != null) builder.setItemModel(customModelData);
+
+        return builder.build();
+    }
+
+    /**
+     * @deprecated Use {@link #getConfiguredItem(String, Object, HeadLookupService)} instead.
+     */
+    @Deprecated(forRemoval = true, since = "1.6.0")
     public static ItemStack getConfiguredItem(@NotNull String material, Object customModelData) {
         ItemStack base;
         if (material.startsWith("head(") && material.endsWith(")")) {
