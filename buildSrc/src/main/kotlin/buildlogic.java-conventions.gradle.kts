@@ -69,7 +69,17 @@ tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
+val javaConvention = extensions.create<JavaConventionExtension>(
+    "myJavaConvention"
+)
+
+javaConvention.documentationJars.convention(true)
+
+afterEvaluate {
+    if (javaConvention.documentationJars.get()) {
+        extensions.configure<JavaPluginExtension> {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }

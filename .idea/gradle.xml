@@ -32,7 +32,7 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$/buildSrc" />
         <option name="modules">
           <set>
-            <option value="/var/home/Zoriot/IdeaProjects/Alps-Lib/buildSrc" />
+            <option value="$PROJECT_DIR$/buildSrc" />
           </set>
         </option>
       </GradleProjectSettings>

@@ -86,6 +86,8 @@ If you want tu use our database system, you also need to add the following depen
 Includes ItemBuilder & LoreBuilder, CustomHeads and other useful utilities.
 ```Important: This module needs to be included when using the AlpsLib-IO module.```
 
+See [utils/README.md](./utils/README.md) for module-specific documentation, including the instance-based head lookup setup.
+
 ```xml
 <dependencies>
     <dependency>

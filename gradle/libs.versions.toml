@@ -23,6 +23,8 @@ lombok = "9.+" # https://github.com/freefair/gradle-plugins/releases
 clipper2 = "1.+" # https://github.com/micycle1/Clipper2-java
 configurate-yaml = "4.+" # https://github.com/SpongePowered/Configurate/releases
 com-googlecode-json-simple = "1.1.1" # https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+io-github-silentdevelopment-headdb-api = "7.0.0-rc.6" # https://github.com/SilentDevelopment/HeadDB/
+com-alpsbte-alpslib-alpslib-utils = "1.5.0" # https://mvn.alps-bte.com/service/rest/repository/browse/alps-bte/com/alpsbte/alpslib/alpslib-utils/
 
 [libraries]
 com-alpsbte-canvas = { module = "com.alpsbte:canvas", version.ref = "com-alpsbte-canvas" }
@@ -46,6 +48,8 @@ com-intellectualsites-bom-bom-newest = { module = "com.intellectualsites.bom:bom
 clipper2 = { module = "com.github.micycle1:Clipper2-java", version.ref = "clipper2" }
 configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate-yaml" }
 com-googlecode-json-simple = { module = "com.googlecode.json-simple:json-simple", version.ref = "com-googlecode-json-simple" }
+io-github-silentdevelopment-headdb-api = { module = "io.github.silentdevelopment.headdb:headdb-api", version.ref = "io-github-silentdevelopment-headdb-api" }
+com-alpsbte-alpslib-alpslib-utils = { module = "com.alpsbte.alpslib:alpslib-utils", version.ref = "com-alpsbte-alpslib-alpslib-utils" }
 
 [plugins]
 freefair-lombok = { id = "io.freefair.lombok",    version.ref = "lombok" }
