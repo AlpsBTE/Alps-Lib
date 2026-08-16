@@ -20,7 +20,7 @@ Replace ```latest``` with the version of the module you want to use. You can fin
 
 ### [AlpsLib-Geo](https://mvn.alps-bte.com/#browse/browse:alps-bte:com%2Falpsbte%2Falpslib%2Falpslib-geo)
 
-This module can be used to get geo information (like country or city) of a location identified by latitude and longitude. This is possible both offline and over https using Nominatim.
+This [module](./geo/README.md) can be used to get geo information (like country or city) of a location identified by latitude and longitude. This is possible both offline and over https using Nominatim.
 
 ```xml
 <dependencies>
