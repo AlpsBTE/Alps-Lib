@@ -13,6 +13,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Provides access to retrieving location data from Nominatim (OSM).
@@ -48,7 +49,7 @@ public class NominatimHandler {
     /**
      * @see #locationFromCoordinates(float, float) 
      */
-    public NominatimGeoLocation locationFromCoordinates(double latitude, double longitude) {
+    public CompletableFuture<NominatimGeoLocation> locationFromCoordinates(double latitude, double longitude) {
         return this.locationFromCoordinates((float) latitude, (float) longitude);
     }
 
@@ -56,41 +57,43 @@ public class NominatimHandler {
      * Get location data for coordinates
      * @param latitude The locations latitude
      * @param longitude The locations longitude
-     * @return The location data or null if there were errors
+     * @return A CompletableFuture with the location data or null if there were errors
      */
-    public NominatimGeoLocation locationFromCoordinates(float latitude, float longitude) {
-        try {
-            JSONObject response;
+    public CompletableFuture<NominatimGeoLocation> locationFromCoordinates(float latitude, float longitude) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                JSONObject response;
 
-            URL url = URI.create("https://nominatim.openstreetmap.org/reverse?lat=" + latitude + "&lon=" + longitude + "&format=json&zoom=" + this.zoom).toURL();
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestProperty("User-Agent", this.userAgent);
-            con.setRequestProperty("Accept", "application/json");
+                URL url = URI.create("https://nominatim.openstreetmap.org/reverse?lat=" + latitude + "&lon=" + longitude + "&format=json&zoom=" + this.zoom).toURL();
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                con.setRequestProperty("User-Agent", this.userAgent);
+                con.setRequestProperty("Accept", "application/json");
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
-            StringBuilder builder = new StringBuilder();
-            reader.lines().forEach(builder::append);
-            response = new JSONObject(builder.toString());
-            con.disconnect();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
+                StringBuilder builder = new StringBuilder();
+                reader.lines().forEach(builder::append);
+                response = new JSONObject(builder.toString());
+                con.disconnect();
 
-            if (!response.has("address")) {
-                this.logger.warn("Invalid nominatim response: %s".formatted(response.toString()));
+                if (!response.has("address")) {
+                    this.logger.warn("Invalid nominatim response: %s".formatted(response.toString()));
+                    return null;
+                }
+
+                JSONObject address = response.getJSONObject("address");
+
+                Map<String, String> locValues = new HashMap<>();
+                for (String key : address.keySet()) {
+                    locValues.put(key, address.getString(key));
+                }
+
+                return new NominatimGeoLocation(latitude, longitude, locValues);
+
+            } catch (IOException e) {
+                this.logger.error("Error nominatim", e);
                 return null;
             }
-
-            JSONObject address = response.getJSONObject("address");
-
-            Map<String, String> locValues = new HashMap<>();
-            for (String key : address.keySet()) {
-                locValues.put(key, address.getString(key));
-            }
-
-            return new NominatimGeoLocation(latitude, longitude, locValues);
-
-        } catch (IOException e) {
-            this.logger.error("Error nominatim", e);
-            return null;
-        }
+        });
     }
 
 }
