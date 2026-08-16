@@ -38,6 +38,13 @@ public class RgcHandler {
     }
 
     /**
+     * @see #locationFromCoordinates(float, float)
+     */
+    public RgcGeoLocation locationFromCoordinates(double latitude, double longitude) {
+        return this.locationFromCoordinates((float) latitude, (float) longitude);
+    }
+
+    /**
      * Get location data for coordinates
      * @param latitude The locations latitude
      * @param longitude The locations longitude
@@ -53,24 +60,10 @@ public class RgcHandler {
             for (String s : rgc.lookup(longitude, latitude)) {
                 Matcher matcher = pattern.matcher(s);
 
-                Optional<String> nameLocalized = Optional.empty();
-                Optional<String> nameEn = Optional.empty();
-                Optional<Integer> adminLevel = Optional.empty();
-
-                int count = 0;
-                while (matcher.find()) {
-                    switch (++count) {
-                        case 1 -> nameLocalized = Optional.of(matcher.group(1));
-                        case 2 -> nameEn = Optional.of(matcher.group(1));
-                        case 7 -> {
-                            try {
-                                adminLevel = Optional.of(Integer.parseInt(matcher.group(1)));
-                            } catch (NumberFormatException e) {
-                                adminLevel = Optional.empty();
-                            }
-                        }
-                    }
-                }
+                MatcherFoundValues values = this.findMatcherValues(matcher);
+                Optional<String> nameLocalized = values.nameLocalized;
+                Optional<String> nameEn = values.nameEn;
+                Optional<Integer> adminLevel = values.adminLevel;
 
                 if (nameLocalized.isEmpty() || nameEn.isEmpty() || adminLevel.isEmpty()) {
                     this.logger.warn("Incomplete location properties from lookup: %s".formatted(s));
@@ -87,5 +80,30 @@ public class RgcHandler {
             return null;
         }
     }
+
+    private MatcherFoundValues findMatcherValues(Matcher matcher) {
+        Optional<String> nameLocalized = Optional.empty();
+        Optional<String> nameEn = Optional.empty();
+        Optional<Integer> adminLevel = Optional.empty();
+
+        int count = 0;
+        while (matcher.find()) {
+            switch (++count) {
+                case 1 -> nameLocalized = Optional.of(matcher.group(1));
+                case 2 -> nameEn = Optional.of(matcher.group(1));
+                case 7 -> {
+                    try {
+                        adminLevel = Optional.of(Integer.parseInt(matcher.group(1)));
+                    } catch (NumberFormatException e) {
+                        adminLevel = Optional.empty();
+                    }
+                }
+            }
+        }
+
+        return new MatcherFoundValues(nameLocalized, nameEn, adminLevel);
+    }
+
+    private record MatcherFoundValues(Optional<String> nameLocalized, Optional<String> nameEn, Optional<Integer> adminLevel) {}
 
 }

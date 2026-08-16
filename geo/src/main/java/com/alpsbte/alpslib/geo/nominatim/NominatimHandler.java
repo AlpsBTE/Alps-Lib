@@ -46,6 +46,13 @@ public class NominatimHandler {
     }
 
     /**
+     * @see #locationFromCoordinates(float, float) 
+     */
+    public NominatimGeoLocation locationFromCoordinates(double latitude, double longitude) {
+        return this.locationFromCoordinates((float) latitude, (float) longitude);
+    }
+
+    /**
      * Get location data for coordinates
      * @param latitude The locations latitude
      * @param longitude The locations longitude
