@@ -1,5 +1,6 @@
 package com.alpsbte.alpslib.geo.rgc;
 
+import com.alpsbte.alpslib.geo.GeoHandler;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -7,6 +8,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +17,7 @@ import java.util.regex.Pattern;
  * Used to retrieve location data offline. Data files, examples, ... can be found on the {@link ReverseGeocoder} creator's GitHub repo.
  * @see <a href="https://github.com/kno10/reversegeocode">GitHub repo</a>
  */
-public class RgcHandler {
+public class RgcHandler implements GeoHandler<RgcGeoLocation> {
 
     private final File locationDataFile;
     private final Logger logger;
@@ -37,48 +40,37 @@ public class RgcHandler {
         }
     }
 
-    /**
-     * @see #locationFromCoordinates(float, float)
-     */
-    public RgcGeoLocation locationFromCoordinates(double latitude, double longitude) {
-        return this.locationFromCoordinates((float) latitude, (float) longitude);
-    }
+    @Override
+    public CompletableFuture<RgcGeoLocation> locationFromCoordinates(float latitude, float longitude) {
+        return CompletableFuture.completedFuture(((Supplier<RgcGeoLocation>) (() -> {
+            try (ReverseGeocoder rgc = new ReverseGeocoder(this.locationDataFile.getAbsolutePath())) {
 
-    /**
-     * Get location data for coordinates
-     * @param latitude The locations latitude
-     * @param longitude The locations longitude
-     * @return The location data or null if there were errors
-     */
-    public RgcGeoLocation locationFromCoordinates(float latitude, float longitude) {
+                Map<Integer, String> adminLevelsValues = new HashMap<>();
 
-        try (ReverseGeocoder rgc = new ReverseGeocoder(this.locationDataFile.getAbsolutePath())) {
+                Pattern pattern = Pattern.compile("\\t?([\\S ]*)");
+                for (String s : rgc.lookup(longitude, latitude)) {
+                    Matcher matcher = pattern.matcher(s);
 
-            Map<Integer, String> adminLevelsValues = new HashMap<>();
+                    MatcherFoundValues values = this.findMatcherValues(matcher);
+                    Optional<String> nameLocalized = values.nameLocalized;
+                    Optional<String> nameEn = values.nameEn;
+                    Optional<Integer> adminLevel = values.adminLevel;
 
-            Pattern pattern = Pattern.compile("\\t?([\\S ]*)");
-            for (String s : rgc.lookup(longitude, latitude)) {
-                Matcher matcher = pattern.matcher(s);
+                    if (nameLocalized.isEmpty() || nameEn.isEmpty() || adminLevel.isEmpty()) {
+                        this.logger.warn("Incomplete location properties from lookup: %s".formatted(s));
+                        continue;
+                    }
 
-                MatcherFoundValues values = this.findMatcherValues(matcher);
-                Optional<String> nameLocalized = values.nameLocalized;
-                Optional<String> nameEn = values.nameEn;
-                Optional<Integer> adminLevel = values.adminLevel;
-
-                if (nameLocalized.isEmpty() || nameEn.isEmpty() || adminLevel.isEmpty()) {
-                    this.logger.warn("Incomplete location properties from lookup: %s".formatted(s));
-                    continue;
+                    adminLevelsValues.put(adminLevel.get(), (this.localizedNames ? nameLocalized.get() : nameEn.get()));
                 }
 
-                adminLevelsValues.put(adminLevel.get(), (this.localizedNames ? nameLocalized.get() : nameEn.get()));
+                return new RgcGeoLocation(latitude, longitude, adminLevelsValues);
+
+            } catch (IOException e) {
+                this.logger.error("An error occurred during rgc.", e);
+                return null;
             }
-
-            return new RgcGeoLocation(latitude, longitude, adminLevelsValues);
-
-        } catch (IOException e) {
-            this.logger.error("An error occurred during rgc.", e);
-            return null;
-        }
+        })).get());
     }
 
     private MatcherFoundValues findMatcherValues(Matcher matcher) {

@@ -1,6 +1,7 @@
 package com.alpsbte.alpslib.geo.nominatim;
 
 
+import com.alpsbte.alpslib.geo.GeoHandler;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
  * Provides access to retrieving location data from Nominatim (OSM).
  * @see <a href="https://nominatim.org/release-docs/develop/api/Reverse/">Nominatim documentation</a>
  */
-public class NominatimHandler {
+public class NominatimHandler implements GeoHandler<NominatimGeoLocation> {
 
     private final Logger logger;
     private final String userAgent;
@@ -46,19 +47,7 @@ public class NominatimHandler {
         this.zoom = zoom;
     }
 
-    /**
-     * @see #locationFromCoordinates(float, float) 
-     */
-    public CompletableFuture<NominatimGeoLocation> locationFromCoordinates(double latitude, double longitude) {
-        return this.locationFromCoordinates((float) latitude, (float) longitude);
-    }
-
-    /**
-     * Get location data for coordinates
-     * @param latitude The locations latitude
-     * @param longitude The locations longitude
-     * @return A CompletableFuture with the location data or null if there were errors
-     */
+    @Override
     public CompletableFuture<NominatimGeoLocation> locationFromCoordinates(float latitude, float longitude) {
         return CompletableFuture.supplyAsync(() -> {
             try {
