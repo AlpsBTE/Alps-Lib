@@ -4,6 +4,9 @@ import com.alpsbte.alpslib.utils.AlpsUtils;
 import com.cryptomorin.xseries.XMaterial;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
+import lombok.Getter;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -15,11 +18,14 @@ import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class AlpsHeadUtils {
+    @Getter
     private static HeadDatabaseAPI headDatabaseAPI;
 
+    @Getter
     private static final Cache<String, ItemStack> customHeads = CacheBuilder.newBuilder().build();
     private static final List<String> unregisteredCustomHeads = new ArrayList<>();
 
+    @Getter
     private static final Cache<UUID, ItemStack> playerHeads = CacheBuilder.newBuilder().build();
 
     public static void registerCustomHead(String headDbId) {
@@ -57,7 +63,7 @@ public class AlpsHeadUtils {
     }
 
     public static ItemStack getPlayerHead(UUID playerUUID) {
-        ItemStack playerHead = customHeads.getIfPresent(playerUUID.toString());
+        ItemStack playerHead = playerHeads.getIfPresent(playerUUID);
         if (playerHead != null) return playerHead;
         ItemStack skull = XMaterial.PLAYER_HEAD.parseItem();
         if (skull == null) return null;
@@ -65,6 +71,10 @@ public class AlpsHeadUtils {
         if (meta == null) return skull;
         meta.setOwningPlayer(Bukkit.getOfflinePlayer(playerUUID));
         skull.setItemMeta(meta);
+
+        // remove "Dynamic" text from dynamic player heads
+        //noinspection UnstableApiUsage
+        skull.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.PROFILE).build());
         return skull;
     }
 
@@ -75,15 +85,4 @@ public class AlpsHeadUtils {
         unregisteredCustomHeads.clear();
     }
 
-    public static HeadDatabaseAPI getHeadDatabaseAPI() {
-        return headDatabaseAPI;
-    }
-
-    public static Cache<String, ItemStack> getCustomHeads() {
-        return customHeads;
-    }
-
-    public static Cache<UUID, ItemStack> getPlayerHeads() {
-        return playerHeads;
-    }
 }
