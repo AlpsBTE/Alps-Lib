@@ -24,26 +24,30 @@ public class NominatimHandler implements GeoHandler<NominatimGeoLocation> {
 
     private final Logger logger;
     private final String userAgent;
+    private final String language;
     private final int zoom;
 
     /**
      * Create a NominatimHandler object with a default zoom of 10
      * @param logger The logger to use
      * @param userAgent Your application's User Agent for the Nominatim http request.
+     * @param language The expected language of the returned data (e.g. en, de, ...)
      */
-    public NominatimHandler(Logger logger, String userAgent) {
-        this(logger, userAgent, 10);
+    public NominatimHandler(Logger logger, String userAgent, String language) {
+        this(logger, userAgent, language, 10);
     }
 
     /**
      * Create a NominatimHandler object
      * @param logger The logger to use
      * @param userAgent Your application's User Agent for the Nominatim http request.
+     * @param language The expected language of the returned data (e.g. en, de, ...)
      * @param zoom The zoom for the returned data's detail
      */
-    public NominatimHandler(Logger logger, String userAgent, int zoom) {
+    public NominatimHandler(Logger logger, String userAgent, String language, int zoom) {
         this.logger = logger;
         this.userAgent = userAgent;
+        this.language = language;
         this.zoom = zoom;
     }
 
@@ -53,7 +57,7 @@ public class NominatimHandler implements GeoHandler<NominatimGeoLocation> {
             try {
                 JSONObject response;
 
-                URL url = URI.create("https://nominatim.openstreetmap.org/reverse?lat=" + latitude + "&lon=" + longitude + "&format=json&zoom=" + this.zoom).toURL();
+                URL url = URI.create("https://nominatim.openstreetmap.org/reverse?lat=" + latitude + "&lon=" + longitude + "&format=json&accept-language=" + this.language + "&zoom=" + this.zoom).toURL();
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestProperty("User-Agent", this.userAgent);
                 con.setRequestProperty("Accept", "application/json");

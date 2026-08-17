@@ -4,8 +4,8 @@ plugins {
 }
 
 dependencies {
-    compileOnly(libs.org.slf4j.slf4j.api)
-    compileOnly(libs.org.json.json)
+    implementation(libs.org.slf4j.slf4j.api)
+    implementation(libs.org.json.json)
 }
 
 description = "AlpsLib-Geo"
