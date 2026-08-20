@@ -23,6 +23,8 @@ lombok = "9.+" # https://github.com/freefair/gradle-plugins/releases
 clipper2 = "1.+" # https://github.com/micycle1/Clipper2-java
 configurate-yaml = "4.+" # https://github.com/SpongePowered/Configurate/releases
 com-googlecode-json-simple = "1.1.1" # https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+org-slf4j-slf4j-api = "2.0.17"
+org-json-json = "20251224"
 
 [libraries]
 com-alpsbte-canvas = { module = "com.alpsbte:canvas", version.ref = "com-alpsbte-canvas" }
@@ -46,6 +48,8 @@ com-intellectualsites-bom-bom-newest = { module = "com.intellectualsites.bom:bom
 clipper2 = { module = "com.github.micycle1:Clipper2-java", version.ref = "clipper2" }
 configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref = "configurate-yaml" }
 com-googlecode-json-simple = { module = "com.googlecode.json-simple:json-simple", version.ref = "com-googlecode-json-simple" }
+org-slf4j-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "org-slf4j-slf4j-api"}
+org-json-json = { module = "org.json:json", version.ref = "org-json-json" }
 
 [plugins]
 freefair-lombok = { id = "io.freefair.lombok",    version.ref = "lombok" }
