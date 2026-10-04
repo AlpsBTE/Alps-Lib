@@ -1,5 +1,6 @@
 package com.alpsbte.alpslib.utils;
 
+import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jspecify.annotations.NonNull;
 
@@ -18,17 +19,30 @@ import java.util.stream.Stream;
  * optionally merged with user-defined {@link MapLinksConfig} entries.
  */
 public class MapLinks implements Iterable<MapLink> {
+    /**
+     * latitude used for link resolution
+     */
+    @Getter
     private final double latitude;
+    /**
+     * longitude used for link resolution
+     */
+    @Getter
     private final double longitude;
+    /**
+     * All resolved links keyed by provider ID.
+     * Unmodifiable map preserving insertion order
+     */
+    @Getter
     private final Map<String, MapLink> linksById;
     private final List<MapLink> links;
 
-    /** Stable provider ID for Open Street Map. */
-    public static final String OSM = "osm";
     /** Stable provider ID for Google Maps. */
     public static final String GOOGLE_MAPS = "googleMaps";
     /** Stable provider ID for Google Earth Web. */
     public static final String GOOGLE_EARTH = "googleEarth";
+    /** Stable provider ID for Open Street Map. */
+    public static final String OSM = "osm";
     /** Stable provider ID for Apple Maps Look Around. */
     public static final String APPLE_LOOK_AROUND = "appleLookAround";
 
@@ -106,20 +120,6 @@ public class MapLinks implements Iterable<MapLink> {
     }
 
     /**
-     * @return latitude used for link resolution
-     */
-    public double getLatitude() {
-        return latitude;
-    }
-
-    /**
-     * @return longitude used for link resolution
-     */
-    public double getLongitude() {
-        return longitude;
-    }
-
-    /**
      * Returns a resolved link by provider ID.
      *
      * @param id provider identifier
@@ -127,15 +127,6 @@ public class MapLinks implements Iterable<MapLink> {
      */
     public MapLink getById(String id) {
         return linksById.get(id);
-    }
-
-    /**
-     * Returns all resolved links keyed by provider ID.
-     *
-     * @return unmodifiable map preserving insertion order
-     */
-    public Map<String, MapLink> getLinksById() {
-        return linksById;
     }
 
     /**
@@ -162,18 +153,12 @@ public class MapLinks implements Iterable<MapLink> {
      * @return iterator for resolved links
      */
     @Override
-    public Iterator<MapLink> iterator() {
+    public @NonNull Iterator<MapLink> iterator() {
         return links.iterator();
     }
 
     private static @NonNull Map<String, MapLinkEntryConfig> createDefaultEntries() {
         Map<String, MapLinkEntryConfig> defaults = new LinkedHashMap<>();
-        defaults.put(OSM, new MapLinkEntryConfig(
-                OSM,
-                "Open Street Map",
-                "https://www.openstreetmap.org/#map=19/{lat}/{lon}",
-                true
-        ));
         defaults.put(GOOGLE_MAPS, new MapLinkEntryConfig(
                 GOOGLE_MAPS,
                 "Google Maps",
@@ -186,10 +171,16 @@ public class MapLinks implements Iterable<MapLink> {
                 "https://earth.google.com/web/search/{lat},{lon}",
                 true
         ));
+        defaults.put(OSM, new MapLinkEntryConfig(
+                OSM,
+                "Open Street Map",
+                "https://www.openstreetmap.org/#map=19/{lat}/{lon}",
+                true
+        ));
         defaults.put(APPLE_LOOK_AROUND, new MapLinkEntryConfig(
                 APPLE_LOOK_AROUND,
-                "Apple Maps Look Around",
-                "https://lookmap.eu.pythonanywhere.com/#c=20/{lat}/{lon}",
+                "Apple Maps",
+                "https://maps.apple.com/place?coordinate={lat}%2C{lon}",
                 true
         ));
         return defaults;
