@@ -8,7 +8,7 @@ dependencies {
     compileOnly(libs.commons.io.commons.io)
     compileOnly(libs.org.jetbrains.annotations)
     compileOnly(libs.com.zaxxer.hikaricp)
-    compileOnly(project(":alpslib-utils"))
+    compileOnly(libs.com.alpsbte.alpslib.alpslib.utils)
     compileOnly(libs.configurate.yaml)
 }
 

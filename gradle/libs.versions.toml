@@ -25,6 +25,8 @@ configurate-yaml = "4.+" # https://github.com/SpongePowered/Configurate/releases
 com-googlecode-json-simple = "1.1.1" # https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
 org-slf4j-slf4j-api = "2.0.17"
 org-json-json = "20251224"
+io-github-silentdevelopment-headdb-api = "7.0.0-rc.6" # https://github.com/SilentDevelopment/HeadDB/
+com-alpsbte-alpslib-alpslib-utils = "1.5.0" # https://mvn.alps-bte.com/service/rest/repository/browse/alps-bte/com/alpsbte/alpslib/alpslib-utils/
 
 [libraries]
 com-alpsbte-canvas = { module = "com.alpsbte:canvas", version.ref = "com-alpsbte-canvas" }
@@ -50,6 +52,8 @@ configurate-yaml = { module = "org.spongepowered:configurate-yaml", version.ref 
 com-googlecode-json-simple = { module = "com.googlecode.json-simple:json-simple", version.ref = "com-googlecode-json-simple" }
 org-slf4j-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "org-slf4j-slf4j-api"}
 org-json-json = { module = "org.json:json", version.ref = "org-json-json" }
+io-github-silentdevelopment-headdb-api = { module = "io.github.silentdevelopment.headdb:headdb-api", version.ref = "io-github-silentdevelopment-headdb-api" }
+com-alpsbte-alpslib-alpslib-utils = { module = "com.alpsbte.alpslib:alpslib-utils", version.ref = "com-alpsbte-alpslib-alpslib-utils" }
 
 [plugins]
 freefair-lombok = { id = "io.freefair.lombok",    version.ref = "lombok" }

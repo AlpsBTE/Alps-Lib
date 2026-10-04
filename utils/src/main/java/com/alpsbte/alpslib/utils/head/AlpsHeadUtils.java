@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link HeadLookupService} instead. This class will be removed in a future major release.
+ */
+@Deprecated(since = "1.6.0", forRemoval = true)
 @SuppressWarnings("unused")
 public class AlpsHeadUtils {
     @Getter
