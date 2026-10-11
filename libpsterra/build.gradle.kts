@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":alpslib-utils"))
+    api(libs.com.alpsbte.alpslib.alpslib.utils)
     api(project(":alpslib-io"))
     api(libs.com.alpsbte.canvas)
     api(libs.com.github.cryptomorin.xseries)
@@ -32,4 +32,8 @@ version = "1.1.4"
 
 tasks.withType<Test>().configureEach {
     failOnNoDiscoveredTests = false
+}
+
+myJavaConvention {
+    documentationJars.set(false)
 }
