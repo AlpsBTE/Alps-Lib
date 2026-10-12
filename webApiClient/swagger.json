@@ -972,6 +972,11 @@
 		"/public/buildteams/{team}/claims": {
 			"get": {
 				"summary": "Get a all claims",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
 				"parameters": [
 					{
 						"description": "BuildTeam ID",
@@ -1030,6 +1035,11 @@
 			},
 			"post": {
 				"summary": "Create a single claim",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
 				"parameters": [
 					{
 						"description": "BuildTeam ID",
@@ -1149,6 +1159,11 @@
 		"/public/buildteams/{team}/claims/{id}": {
 			"get": {
 				"summary": "Get a single claim",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
 				"parameters": [
 					{
 						"description": "BuildTeam ID",
@@ -1223,6 +1238,11 @@
 			},
 			"put": {
 				"summary": "Update a single claim",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
 				"parameters": [
 					{
 						"description": "BuildTeam ID",
@@ -1357,6 +1377,11 @@
 			},
 			"delete": {
 				"summary": "Delete a single claim",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
 				"parameters": [
 					{
 						"description": "BuildTeam ID",
@@ -1424,6 +1449,11 @@
 		"/public/buildteams/{team}/members": {
 			"get": {
 				"summary": "Get all build team members",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
 				"parameters": [
 					{
 						"description": "BuildTeam ID",
@@ -1495,6 +1525,12 @@
 	},
 	"components": {
 		"securitySchemes": {
+			"publicApiKey": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "API key",
+				"description": "API key for public routes. The client sends it as Authorization: Bearer <api-key>."
+			},
 			"openId": {
 				"type": "openIdConnect",
 				"openIdConnectUrl": "https://auth.buildtheearth.net/auth/realms/website/.well-known/openid-configuration"

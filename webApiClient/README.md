@@ -25,6 +25,15 @@ Add the Alps BTE Maven repository and the client dependency to your Maven projec
 
 The client uses OpenAPI Generator's `okhttp-gson` Java library. Generated API classes are under `com.alpsbte.alpslib.web.api`, models under `com.alpsbte.alpslib.web.model`, and client support classes under `com.alpsbte.alpslib.web.invoker`.
 
+Public routes require the build team's API key as a bearer token in the `Authorization` header (`Authorization: Bearer <api-key>`). Configure the generated client's `ApiClient` with the token before calling public operations:
+
+```java
+ApiClient apiClient = new ApiClient();
+apiClient.setBearerToken(apiKey);
+```
+
+The OpenAPI security requirement applies to every operation under `/public/`, including claim creation. The `X-API-Key` header is not used by these routes.
+
 ## Generate and release
 
 Pull requests that change the spec run `.github/workflows/web-api-client.yml`. The workflow validates `swagger.json`, generates a standalone Maven project with OpenAPI Generator CLI 7.26.0, and packages it to ensure the generated client compiles. Generated files live only in the runner's temporary directory.
