@@ -111,3 +111,7 @@ See [utils/README.md](./utils/README.md) for module-specific documentation, incl
     </dependency>
 </dependencies>
 ```
+
+### [AlpsLib Web API Client](./webApiClient/README.md)
+
+The BuildTheEarth.net API client is generated from the OpenAPI specification and published as a standalone Maven artifact. See the [web API client README](./webApiClient/README.md) for usage and release instructions.

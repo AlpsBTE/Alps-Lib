@@ -1,0 +1,85 @@
+name: Web API Client
+
+on:
+  pull_request:
+    paths:
+      - 'webApiClient/**'
+      - '.github/workflows/web-api-client.yml'
+  push:
+    tags:
+      - 'web-api-client-v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+          server-id: alps-bte
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+
+      - name: Download OpenAPI Generator CLI
+        run: |
+          curl --fail --location --silent --show-error \
+            https://repo.maven.apache.org/maven2/org/openapitools/openapi-generator-cli/7.26.0/openapi-generator-cli-7.26.0.jar \
+            --output "$RUNNER_TEMP/openapi-generator-cli.jar"
+
+      - name: Validate release tag
+        if: startsWith(github.ref, 'refs/tags/')
+        id: version
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#web-api-client-v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Tag must be web-api-client-v<semver>; got: $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Validate spec and generate client
+        env:
+          CLIENT_VERSION: ${{ steps.version.outputs.value || '0.0.0-SNAPSHOT' }}
+        run: |
+          java -jar "$RUNNER_TEMP/openapi-generator-cli.jar" generate \
+            --input-spec webApiClient/swagger.json \
+            --generator-name java \
+            --output "$RUNNER_TEMP/web-api-client" \
+            --library okhttp-gson \
+            --api-package com.alpsbte.alpslib.web.api \
+            --model-package com.alpsbte.alpslib.web.model \
+            --invoker-package com.alpsbte.alpslib.web.invoker \
+            --additional-properties=groupId=com.alpsbte.alpslib,artifactId=web-api-client,artifactVersion="$CLIENT_VERSION",buildTool=maven,dateLibrary=java8,useJakartaEe=false,projectName=AlpsLib-Web-API-Client,projectDescription=BuildTheEarth.net-API-client-for-AlpsLib,licenseName=MIT,licenseUrl=https://opensource.org/licenses/MIT,scmConnection=scm:git:https://github.com/AlpsBTE/Alps-Lib.git,scmDeveloperConnection=scm:git:ssh://github.com/AlpsBTE/Alps-Lib.git,scmUrl=https://github.com/AlpsBTE/Alps-Lib \
+            --global-property apiTests=false,modelTests=false,apiDocs=false,modelDocs=false
+
+      - name: Build client
+        if: github.event_name == 'pull_request'
+        working-directory: ${{ runner.temp }}/web-api-client
+        run: mvn --batch-mode --no-transfer-progress -Dmaven.test.skip=true package
+
+      - name: Build and publish client
+        if: startsWith(github.ref, 'refs/tags/')
+        working-directory: ${{ runner.temp }}/web-api-client
+        run: |
+          mvn --batch-mode --no-transfer-progress -Dmaven.test.skip=true package
+          mvn --batch-mode --no-transfer-progress org.apache.maven.plugins:,:3.1.3:deploy-file \
+            -Dfile="target/web-api-client-${{ steps.version.outputs.value }}.jar" \
+            -Dsources="target/web-api-client-${{ steps.version.outputs.value }}-sources.jar" \
+            -Djavadoc="target/web-api-client-${{ steps.version.outputs.value }}-javadoc.jar" \
+            -DpomFile=pom.xml \
+            -DrepositoryId=alps-bte \
+            -Durl=https://mvn.alps-bte.com/repository/alps-bte/
