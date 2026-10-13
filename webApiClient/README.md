@@ -34,6 +34,13 @@ apiClient.setBearerToken(apiKey);
 
 The OpenAPI security requirement applies to every operation under `/public/`, including claim creation. The `X-API-Key` header is not used by these routes.
 
+## Developer quick start
+
+1. Change `swagger.json`.
+2. Regenerate the client with the pinned OpenAPI Generator CLI.
+3. Package it locally to verify the generated Maven project still builds.
+4. Install it to Maven local if you want another project to consume the snapshot immediately.
+
 ## Generate and release
 
 Pull requests that change the spec run `.github/workflows/web-api-client.yml`. The workflow validates `swagger.json`, generates a standalone Maven project with OpenAPI Generator CLI 7.26.0, and packages it to ensure the generated client compiles. Generated files live only in the runner's temporary directory.
@@ -58,6 +65,7 @@ java -jar openapi-generator-cli-7.26.0.jar generate \
   --additional-properties=groupId=com.alpsbte.alpslib,artifactId=web-api-client,artifactVersion=1.0.0,buildTool=maven,dateLibrary=java8,useJakartaEe=false,projectName=AlpsLib-Web-API-Client,projectDescription=BuildTheEarth.net-API-client-for-AlpsLib,licenseName=MIT,licenseUrl=https://opensource.org/licenses/MIT,scmConnection=scm:git:https://github.com/AlpsBTE/Alps-Lib.git,scmDeveloperConnection=scm:git:ssh://github.com/AlpsBTE/Alps-Lib.git,scmUrl=https://github.com/AlpsBTE/Alps-Lib \
   --global-property=apiTests=false,modelTests=false,apiDocs=false,modelDocs=false
 mvn -f build/web-api-client/pom.xml -Dmaven.test.skip=true -Djavax.net.ssl.trustStoreType=Windows-ROOT package
+mvn -f build/web-api-client/pom.xml -Dmaven.test.skip=true -Djavax.net.ssl.trustStoreType=Windows-ROOT install
 ```
 
 On non-Windows systems, omit `-Djavax.net.ssl.trustStoreType=Windows-ROOT`.
