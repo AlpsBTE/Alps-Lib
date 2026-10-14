@@ -971,7 +971,7 @@
 		},
 		"/public/buildteams/{team}/claims": {
 			"get": {
-				"summary": "Get a all claims",
+				"summary": "Get all claims for a build team",
 				"security": [
 					{
 						"publicApiKey": []
@@ -979,13 +979,12 @@
 				],
 				"parameters": [
 					{
-						"description": "BuildTeam ID",
+						"description": "BuildTeam ID or slug",
 						"in": "path",
 						"name": "team",
 						"required": true,
 						"schema": {
-							"type": "string",
-							"format": "uuid"
+							"type": "string"
 						}
 					},
 					{
@@ -1005,6 +1004,15 @@
 						"schema": {
 							"type": "boolean"
 						}
+					},
+					{
+						"description": "Page index for paginated results",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
 					}
 				],
 				"responses": {
@@ -1013,9 +1021,29 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/Claim"
-									}
+									"oneOf": [
+										{
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Claim"
+											}
+										},
+										{
+											"type": "object",
+											"required": ["pages", "data"],
+											"properties": {
+												"pages": {
+													"type": "integer"
+												},
+												"data": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Claim"
+													}
+												}
+											}
+										}
+									]
 								}
 							}
 						}
@@ -1042,13 +1070,12 @@
 				],
 				"parameters": [
 					{
-						"description": "BuildTeam ID",
+						"description": "BuildTeam ID or slug",
 						"in": "path",
 						"name": "team",
 						"required": true,
 						"schema": {
-							"type": "string",
-							"format": "uuid"
+							"type": "string"
 						}
 					},
 					{
@@ -1059,14 +1086,28 @@
 						"schema": {
 							"type": "boolean"
 						}
+					},
+					{
+						"description": "Skip OSM and Overpass external API calls",
+						"in": "query",
+						"name": "skipOSM",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
 					}
 				],
 				"requestBody": {
+					"required": true,
 					"content": {
 						"application/json": {
 							"schema": {
 								"type": "object",
 								"properties": {
+									"skipOSM": {
+										"type": "boolean",
+										"description": "Skip OSM and Overpass external API calls"
+									},
 									"owner": {
 										"type": "object",
 										"properties": {}
@@ -1101,6 +1142,7 @@
 									},
 									"name": {
 										"type": "string",
+										"description": "Optional. Defaults to an OSM-derived name, the claim center, or 'Unnamed Claim'.",
 										"example": "Elphilharmonie Hamburg"
 									},
 									"externalId": {
@@ -1126,7 +1168,7 @@
 										}
 									}
 								},
-								"required": ["area", "active", "finished", "name"]
+								"required": ["area", "active", "finished"]
 							}
 						}
 					}
@@ -1166,13 +1208,12 @@
 				],
 				"parameters": [
 					{
-						"description": "BuildTeam ID",
+						"description": "BuildTeam ID or slug",
 						"in": "path",
 						"name": "team",
 						"required": true,
 						"schema": {
-							"type": "string",
-							"format": "uuid"
+							"type": "string"
 						}
 					},
 					{
@@ -1245,13 +1286,12 @@
 				],
 				"parameters": [
 					{
-						"description": "BuildTeam ID",
+						"description": "BuildTeam ID or slug",
 						"in": "path",
 						"name": "team",
 						"required": true,
 						"schema": {
-							"type": "string",
-							"format": "uuid"
+							"type": "string"
 						}
 					},
 					{
@@ -1280,6 +1320,15 @@
 						"schema": {
 							"type": "boolean"
 						}
+					},
+					{
+						"description": "Skip OSM and Overpass external API calls",
+						"in": "query",
+						"name": "skipOSM",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
 					}
 				],
 				"requestBody": {
@@ -1288,6 +1337,10 @@
 							"schema": {
 								"type": "object",
 								"properties": {
+									"skipOSM": {
+										"type": "boolean",
+										"description": "Skip OSM and Overpass external API calls"
+									},
 									"owner": {
 										"type": "object",
 										"properties": {}
@@ -1384,13 +1437,12 @@
 				],
 				"parameters": [
 					{
-						"description": "BuildTeam ID",
+						"description": "BuildTeam ID or slug",
 						"in": "path",
 						"name": "team",
 						"required": true,
 						"schema": {
-							"type": "string",
-							"format": "uuid"
+							"type": "string"
 						}
 					},
 					{
@@ -1446,7 +1498,7 @@
 				"tags": ["Claim", "Token based"]
 			}
 		},
-		"/public/buildteams/{team}/members": {
+		"/public/buildteams/{id}/members": {
 			"get": {
 				"summary": "Get all build team members",
 				"security": [
@@ -1456,37 +1508,27 @@
 				],
 				"parameters": [
 					{
-						"description": "BuildTeam ID",
+						"description": "BuildTeam ID or slug",
 						"in": "path",
-						"name": "team",
+						"name": "id",
 						"required": true,
 						"schema": {
-							"type": "string",
-							"format": "uuid"
+							"type": "string"
 						}
 					},
 					{
-						"description": "Show Builders",
+						"description": "Page index for paginated results",
 						"in": "query",
-						"name": "withBuilders",
+						"name": "page",
 						"required": false,
 						"schema": {
-							"type": "boolean"
+							"type": "integer"
 						}
 					},
 					{
 						"description": "Use BuildTeam Slug",
 						"in": "query",
 						"name": "slug",
-						"required": false,
-						"schema": {
-							"type": "boolean"
-						}
-					},
-					{
-						"description": "Is external Id",
-						"in": "query",
-						"name": "external",
 						"required": false,
 						"schema": {
 							"type": "boolean"
@@ -1499,9 +1541,29 @@
 						"content": {
 							"*/*": {
 								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/OwnAccount"
-									}
+									"oneOf": [
+										{
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/OwnAccount"
+											}
+										},
+										{
+											"type": "object",
+											"required": ["pages", "data"],
+											"properties": {
+												"pages": {
+													"type": "integer"
+												},
+												"data": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/OwnAccount"
+													}
+												}
+											}
+										}
+									]
 								}
 							}
 						}
