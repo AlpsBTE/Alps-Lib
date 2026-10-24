@@ -1110,7 +1110,14 @@
 									},
 									"owner": {
 										"type": "object",
-										"properties": {}
+										"description": "Prisma where filter for the claim owner. Typically { \"minecraft\": \"PlayerName\" }. Returns 404 if no matching user exists.",
+										"properties": {
+											"id": { "type": "string", "format": "uuid" },
+											"ssoId": { "type": "string" },
+											"discordId": { "type": "string" },
+											"minecraft": { "type": "string", "description": "Linked Minecraft username" },
+											"username": { "type": "string" }
+										}
 									},
 									"area": {
 										"type": "array",
@@ -1118,12 +1125,12 @@
 											"oneOf": [
 												{
 													"type": "string",
-													"description": "Coordinate pair in form of lat, lng",
+													"description": "Coordinate pair in form of lng, lat",
 													"example": "8.741082435175388, 48.82172221980192"
 												},
 												{
 													"type": "array",
-													"description": "Coordinate pair in form of lat, lng",
+													"description": "Coordinate pair in form of lng, lat",
 													"example": ["8.741082435175388", "48.82172221980192"],
 													"items": {
 														"type": "string"
@@ -1343,7 +1350,14 @@
 									},
 									"owner": {
 										"type": "object",
-										"properties": {}
+										"description": "Prisma where filter for the claim owner. Typically { \"minecraft\": \"PlayerName\" }. Returns 404 if no matching user exists.",
+										"properties": {
+											"id": { "type": "string", "format": "uuid" },
+											"ssoId": { "type": "string" },
+											"discordId": { "type": "string" },
+											"minecraft": { "type": "string", "description": "Linked Minecraft username" },
+											"username": { "type": "string" }
+										}
 									},
 									"area": {
 										"type": "array",
@@ -1351,12 +1365,12 @@
 											"oneOf": [
 												{
 													"type": "string",
-													"description": "Coordinate pair in form of lat, lng",
+													"description": "Coordinate pair in form of lng, lat",
 													"example": "8.741082435175388, 48.82172221980192"
 												},
 												{
 													"type": "array",
-													"description": "Coordinate pair in form of lat, lng",
+													"description": "Coordinate pair in form of lng, lat",
 													"example": ["8.741082435175388", "48.82172221980192"],
 													"items": {
 														"type": "string"
@@ -2154,9 +2168,13 @@
 					"discordId": {
 						"type": "string"
 					},
-					"name": {
+					"minecraft": {
 						"type": "string",
-						"description": "The Minecraft name of the user"
+						"description": "Linked Minecraft username of the user"
+					},
+					"username": {
+						"type": "string",
+						"description": "Website username of the user"
 					}
 				}
 			}
