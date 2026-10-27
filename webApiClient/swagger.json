@@ -1865,6 +1865,11 @@
 						"type": "boolean",
 						"example": true
 					},
+					"supportsBedrock": {
+						"type": "boolean",
+						"nullable": true,
+						"example": false
+					},
 					"_count": {
 						"type": "object",
 						"properties": {
