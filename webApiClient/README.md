@@ -1,6 +1,6 @@
 # AlpsLib Web API Client
 
-This is the generated Java client for the BuildTheEarth.net API. The OpenAPI document in [`swagger.json`](./swagger.json) is the source of truth; generated Java sources are not committed.
+This is the generated Java client for the [BuildTheEarth.net API](https://buildtheearth.github.io/web/api.html). The OpenAPI document in [`swagger.json`](./swagger.json) is the source of truth; generated Java sources are not committed.
 
 ## Use the published client
 
