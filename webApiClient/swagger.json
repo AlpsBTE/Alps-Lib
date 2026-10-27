@@ -1,0 +1,2188 @@
+{
+	"openapi": "3.0.2",
+	"info": {
+		"title": "BuildTheEarth.net API",
+		"version": "1.1"
+	},
+	"servers": [
+		{
+			"url": "https://api.buildtheearth.net/api/v1",
+			"description": "Production instance"
+		},
+		{
+			"url": "http://localhost:8080/api/v1",
+			"description": "Development instance"
+		}
+	],
+	"tags": [
+		{
+			"name": "General",
+			"description": "General Utility Functions"
+		},
+		{
+			"name": "BuildTeam",
+			"description": "Anything regarding the BuildTeams"
+		},
+		{
+			"name": "Claim",
+			"description": "Anything regarding Claims"
+		}
+	],
+	"paths": {
+		"/healthcheck": {
+			"get": {
+				"summary": "Check the Health of the API",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"example": {
+									"status": "ok"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {}
+						}
+					}
+				},
+				"tags": ["General"]
+			}
+		},
+		"/account": {
+			"get": {
+				"summary": "Get your account information",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/OwnAccount"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"tags": ["General"]
+			}
+		},
+		"/permissions": {
+			"get": {
+				"summary": "Get all available permissions",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Permission"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"tags": ["General"]
+			}
+		},
+		"/upload": {
+			"post": {
+				"summary": "Upload an image to the BTE Website. Do not use",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"image": {
+										"type": "string",
+										"format": "binary"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Upload"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"tags": ["General"]
+			}
+		},
+		"/buildteams": {
+			"get": {
+				"summary": "Get a list of all BuildTeams",
+				"parameters": [
+					{
+						"description": "The page of results to return, **starting at 0**",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"oneOf": [
+										{
+											"type": "object",
+											"properties": {
+												"pages": {
+													"type": "number",
+													"example": 6
+												},
+												"data": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/BuildTeamMinimal"
+													}
+												}
+											}
+										},
+										{
+											"items": {
+												"$ref": "#/components/schemas/BuildTeamMinimal"
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			}
+		},
+		"/buildteams/{id}": {
+			"get": {
+				"summary": "Get a build team",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Include Showcases",
+						"in": "query",
+						"name": "showcases",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Include Members",
+						"in": "query",
+						"name": "members",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/BuildTeam"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			},
+			"post": {
+				"summary": "Update a build team",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/BuildTeam"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/BuildTeam"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			}
+		},
+		"/buildteams/{id}/application/questions": {
+			"get": {
+				"summary": "Get a list of all application questions of a buildteam",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/ApplicationQuestion"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			},
+			"post": {
+				"summary": "Update all application questions of a buildteam",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"questions": {
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/ApplicationQuestion"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/ApplicationQuestion"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			}
+		},
+		"/buildteams/{id}/socials": {
+			"get": {
+				"summary": "Get a list of all socials of a buildteam",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Social"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			},
+			"post": {
+				"summary": "Update all socials of a buildteam",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"socials": {
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/Social"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Social"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			}
+		},
+		"/buildteam/{id}/socials/{sid}": {
+			"delete": {
+				"summary": "Delete a social of a buildteam",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "The uuid of the social",
+						"in": "path",
+						"name": "sid",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Social"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			}
+		},
+		"/buildteams/{id}/members": {
+			"get": {
+				"summary": "Get all build team members",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/OwnAccount"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			},
+			"delete": {
+				"summary": "Remove a builder from a builteam",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"user": {
+										"type": "string",
+										"format": "uuid",
+										"example": "cda8w7d7-34ub-9hw5-a4vj-11jb0dkeqa2a"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/OwnAccount"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			}
+		},
+		"/buildteams/{id}/managers": {
+			"get": {
+				"summary": "Get all build team managers",
+				"parameters": [
+					{
+						"description": "The uuid of the buildteam",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/OwnAccount"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam"]
+			}
+		},
+		"/claims": {
+			"get": {
+				"summary": "Get a list of all claims",
+				"parameters": [
+					{
+						"description": "Only include finished claims",
+						"in": "query",
+						"name": "finished",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Only include active claims",
+						"in": "query",
+						"name": "active",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Claim"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["Claim"]
+			}
+		},
+		"/public/buildteams/{team}/claims": {
+			"get": {
+				"summary": "Get all claims for a build team",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "BuildTeam ID or slug",
+						"in": "path",
+						"name": "team",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Show Builders",
+						"in": "query",
+						"name": "withBuilders",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Use BuildTeam Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Page index for paginated results",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"oneOf": [
+										{
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/Claim"
+											}
+										},
+										{
+											"type": "object",
+											"required": ["pages", "data"],
+											"properties": {
+												"pages": {
+													"type": "integer"
+												},
+												"data": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/Claim"
+													}
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"tags": ["Claim", "Token based"]
+			},
+			"post": {
+				"summary": "Create a single claim",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "BuildTeam ID or slug",
+						"in": "path",
+						"name": "team",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use BuildTeam Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Skip OSM and Overpass external API calls",
+						"in": "query",
+						"name": "skipOSM",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"skipOSM": {
+										"type": "boolean",
+										"description": "Skip OSM and Overpass external API calls"
+									},
+									"owner": {
+										"type": "object",
+										"description": "Prisma where filter for the claim owner. Typically { \"minecraft\": \"PlayerName\" }. Returns 404 if no matching user exists.",
+										"properties": {
+											"id": { "type": "string", "format": "uuid" },
+											"ssoId": { "type": "string" },
+											"discordId": { "type": "string" },
+											"minecraft": { "type": "string", "description": "Linked Minecraft username" },
+											"username": { "type": "string" }
+										}
+									},
+									"area": {
+										"type": "array",
+										"items": {
+											"oneOf": [
+												{
+													"type": "string",
+													"description": "Coordinate pair in form of lng, lat",
+													"example": "8.741082435175388, 48.82172221980192"
+												},
+												{
+													"type": "array",
+													"description": "Coordinate pair in form of lng, lat",
+													"example": ["8.741082435175388", "48.82172221980192"],
+													"items": {
+														"type": "string"
+													}
+												}
+											]
+										}
+									},
+									"active": {
+										"type": "boolean",
+										"example": true
+									},
+									"finished": {
+										"type": "boolean",
+										"example": true
+									},
+									"name": {
+										"type": "string",
+										"description": "Optional. Defaults to an OSM-derived name, the claim center, or 'Unnamed Claim'.",
+										"example": "Elphilharmonie Hamburg"
+									},
+									"externalId": {
+										"type": "string",
+										"example": "2b4282eb-cce1-4fad-8920-77eab48d5125"
+									},
+									"description": {
+										"type": "string",
+										"example": "Theaterhaus"
+									},
+									"city": {
+										"type": "string",
+										"example": "Hamburg"
+									},
+									"buildings": {
+										"type": "number",
+										"example": 2
+									},
+									"builders": {
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/UserRef"
+										}
+									}
+								},
+								"required": ["area", "active", "finished"]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Claim"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"tags": ["Claim", "Token based"]
+			}
+		},
+		"/public/buildteams/{team}/claims/{id}": {
+			"get": {
+				"summary": "Get a single claim",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "BuildTeam ID or slug",
+						"in": "path",
+						"name": "team",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Claim ID",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Show Builders",
+						"in": "query",
+						"name": "withBuilders",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Use BuildTeam Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Is external Id",
+						"in": "query",
+						"name": "external",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Claim"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"tags": ["Claim", "Token based"]
+			},
+			"put": {
+				"summary": "Update a single claim",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "BuildTeam ID or slug",
+						"in": "path",
+						"name": "team",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Claim ID",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use BuildTeam Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Is external Id",
+						"in": "query",
+						"name": "external",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Skip OSM and Overpass external API calls",
+						"in": "query",
+						"name": "skipOSM",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"skipOSM": {
+										"type": "boolean",
+										"description": "Skip OSM and Overpass external API calls"
+									},
+									"owner": {
+										"type": "object",
+										"description": "Prisma where filter for the claim owner. Typically { \"minecraft\": \"PlayerName\" }. Returns 404 if no matching user exists.",
+										"properties": {
+											"id": { "type": "string", "format": "uuid" },
+											"ssoId": { "type": "string" },
+											"discordId": { "type": "string" },
+											"minecraft": { "type": "string", "description": "Linked Minecraft username" },
+											"username": { "type": "string" }
+										}
+									},
+									"area": {
+										"type": "array",
+										"items": {
+											"oneOf": [
+												{
+													"type": "string",
+													"description": "Coordinate pair in form of lng, lat",
+													"example": "8.741082435175388, 48.82172221980192"
+												},
+												{
+													"type": "array",
+													"description": "Coordinate pair in form of lng, lat",
+													"example": ["8.741082435175388", "48.82172221980192"],
+													"items": {
+														"type": "string"
+													}
+												}
+											]
+										}
+									},
+									"active": {
+										"type": "boolean",
+										"example": true
+									},
+									"finished": {
+										"type": "boolean",
+										"example": true
+									},
+									"name": {
+										"type": "string",
+										"example": "Elphilharmonie Hamburg"
+									},
+									"externalId": {
+										"type": "string",
+										"example": "2b4282eb-cce1-4fad-8920-77eab48d5125"
+									},
+									"description": {
+										"type": "string",
+										"example": "Theaterhaus"
+									},
+									"city": {
+										"type": "string",
+										"example": "Hamburg"
+									},
+									"buildings": {
+										"type": "number",
+										"example": 2
+									},
+									"builders": {
+										"type": "array",
+										"items": {
+											"$ref": "#/components/schemas/UserRef"
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Claim"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"tags": ["Claim", "Token based"]
+			},
+			"delete": {
+				"summary": "Delete a single claim",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "BuildTeam ID or slug",
+						"in": "path",
+						"name": "team",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Claim ID",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Use BuildTeam Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"description": "Is external Id",
+						"in": "query",
+						"name": "external",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Claim"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error"
+								}
+							}
+						}
+					}
+				},
+				"tags": ["Claim", "Token based"]
+			}
+		},
+		"/public/buildteams/{id}/members": {
+			"get": {
+				"summary": "Get all build team members",
+				"security": [
+					{
+						"publicApiKey": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "BuildTeam ID or slug",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Page index for paginated results",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"type": "integer"
+						}
+					},
+					{
+						"description": "Use BuildTeam Slug",
+						"in": "query",
+						"name": "slug",
+						"required": false,
+						"schema": {
+							"type": "boolean"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"*/*": {
+								"schema": {
+									"oneOf": [
+										{
+											"type": "array",
+											"items": {
+												"$ref": "#/components/schemas/OwnAccount"
+											}
+										},
+										{
+											"type": "object",
+											"required": ["pages", "data"],
+											"properties": {
+												"pages": {
+													"type": "integer"
+												},
+												"data": {
+													"type": "array",
+													"items": {
+														"$ref": "#/components/schemas/OwnAccount"
+													}
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/Error"
+									}
+								}
+							}
+						}
+					}
+				},
+				"tags": ["BuildTeam", "Token based"]
+			}
+		}
+	},
+	"components": {
+		"securitySchemes": {
+			"publicApiKey": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "API key",
+				"description": "API key for public routes. The client sends it as Authorization: Bearer <api-key>."
+			},
+			"openId": {
+				"type": "openIdConnect",
+				"openIdConnectUrl": "https://auth.buildtheearth.net/auth/realms/website/.well-known/openid-configuration"
+			}
+		},
+		"schemas": {
+			"Error": {
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "boolean",
+						"example": true
+					},
+					"errors": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"msg": {
+									"type": "string",
+									"example": "Invalid value"
+								},
+								"path": {
+									"type": "string",
+									"example": "name"
+								}
+							}
+						}
+					},
+					"message": {
+						"type": "string",
+						"example": "You don't have permission to access this resource."
+					},
+					"code": {
+						"type": "number",
+						"example": 401
+					}
+				}
+			},
+			"OwnAccount": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"example": "cda8w7d7-34ub-9hw5-a4vj-11jb0dkeqa2a"
+					},
+					"ssoId": {
+						"type": "string",
+						"format": "uuid",
+						"example": "dab80941-7ed8-4a3e-a75f-0969d4cd3fa4"
+					},
+					"discordId": {
+						"type": "number",
+						"example": 635411595253776400
+					},
+					"username": {
+						"type": "string",
+						"example": "Nudlsupp"
+					},
+					"email": {
+						"type": "string",
+						"format": "email",
+						"example": "nudelsuppe@buildtheearth.net"
+					},
+					"emailVerified": {
+						"type": "boolean",
+						"example": true
+					},
+					"avatar": {
+						"type": "string",
+						"format": "url",
+						"example": "https://i.imgur.com/..."
+					},
+					"auth": {
+						"type": "object",
+						"properties": {
+							"exp": {
+								"type": "object",
+								"properties": {
+									"unix": {
+										"type": "number",
+										"example": 1703265888
+									},
+									"readable": {
+										"type": "string",
+										"format": "date-time",
+										"example": "2023-12-22T17:24:48.000Z"
+									}
+								}
+							},
+							"iat": {
+								"type": "object",
+								"properties": {
+									"unix": {
+										"type": "number",
+										"example": 1703265888
+									},
+									"readable": {
+										"type": "string",
+										"format": "date-time",
+										"example": "2023-12-22T17:24:48.000Z"
+									}
+								}
+							}
+						}
+					},
+					"permissions": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"properties": {
+								"permission": {
+									"type": "string",
+									"example": "permission.add"
+								},
+								"buildTeamSlug": {
+									"type": "string",
+									"nullable": true,
+									"example": "de"
+								}
+							}
+						}
+					}
+				}
+			},
+			"Permission": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"example": "account.info"
+					},
+					"description": {
+						"type": "string",
+						"example": "Optain own account Information"
+					},
+					"defaultValue": {
+						"type": "boolean",
+						"example": true
+					},
+					"global": {
+						"type": "boolean",
+						"example": true
+					}
+				}
+			},
+			"Upload": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"example": "cda8w7d7-34ub-9hw5-a4vj-11jb0dkeqa2a"
+					},
+					"name": {
+						"type": "string",
+						"example": "007c36ab5048c71e3f68bdd540c95452815ae67bdbe7519c82b876dc034fcae1"
+					},
+					"hash": {
+						"type": "string",
+						"example": ""
+					},
+					"height": {
+						"type": "number",
+						"example": 1080
+					},
+					"width": {
+						"type": "number",
+						"example": 1920
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2023-12-22T17:24:48.000Z"
+					}
+				}
+			},
+			"BuildTeamMinimal": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"example": "43c98aab-e2d1-4a78-8c91-1a3218839e0d"
+					},
+					"name": {
+						"type": "string",
+						"example": "BTE New York City"
+					},
+					"icon": {
+						"type": "string",
+						"format": "url",
+						"example": "https://cdn.buildtheearth.net/uploads/7908179b923215fda90b5b1b5ace218eeb2c9775d0a13ca7f86fc2f194486975"
+					},
+					"backgroundImage": {
+						"type": "string",
+						"format": "url",
+						"example": "https://cdn.buildtheearth.net/uploads/879c4af49ee880f348c95e9fd7bdb11dd526fda08ce6dd9c1bfaee3b91a7368e"
+					},
+					"invite": {
+						"type": "string",
+						"example": "https://discord.gg/nMJMMBR"
+					},
+					"about": {
+						"type": "string",
+						"example": "..."
+					},
+					"creatorId": {
+						"type": "string",
+						"format": "uuid",
+						"example": "7c52f608-a472-44f4-a158-f036c797772d"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2023-12-22T09:52:53.069Z"
+					},
+					"location": {
+						"type": "string",
+						"example": "us"
+					},
+					"slug": {
+						"type": "string",
+						"example": "nyc"
+					},
+					"ip": {
+						"type": "string",
+						"example": "buildtheearth.net"
+					},
+					"acceptionMessage": {
+						"type": "string",
+						"example": "Welcome to the team, you are now a builder!"
+					},
+					"rejectionMessage": {
+						"type": "string",
+						"example": "Not a good application, sorry."
+					},
+					"trialMessage": {
+						"type": "string",
+						"example": "Welcome to the team as a trial, please finish your trial buildings and then reapply."
+					},
+					"allowTrial": {
+						"type": "boolean",
+						"example": false
+					},
+					"allowBuilderClaim": {
+						"type": "boolean",
+						"example": false
+					},
+					"allowApplications": {
+						"type": "boolean",
+						"example": false
+					},
+					"instantAccept": {
+						"type": "boolean",
+						"example": true
+					},
+					"supportsBedrock": {
+						"type": "boolean",
+						"nullable": true,
+						"example": false
+					},
+					"_count": {
+						"type": "object",
+						"properties": {
+							"members": {
+								"type": "number",
+								"example": 3690
+							}
+						}
+					}
+				}
+			},
+			"Social": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"example": "f9dd9244-e777-4d6e-83ec-d36b9effa6e6"
+					},
+					"name": {
+						"type": "string",
+						"example": "Instagram"
+					},
+					"icon": {
+						"type": "string",
+						"enum": ["instagram", "tiktok", "youtube", "website", "discord", "twitter", "twitch"]
+					},
+					"url": {
+						"type": "string",
+						"format": "url",
+						"example": "https://www.instagram.com/btethemeparks"
+					},
+					"buildTeamId": {
+						"type": "string",
+						"format": "uuid",
+						"example": "b3b8c684-becd-4779-a3b3-ca81fef7b954"
+					}
+				}
+			},
+			"Claim": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"example": "f9dd9244-e777-4d6e-83ec-d36b9effa6e6"
+					},
+					"externalId": {
+						"type": "string",
+						"example": ""
+					},
+					"ownerId": {
+						"type": "string",
+						"format": "uuid",
+						"example": "f9dd9244-e777-4d6e-83ec-d36b9effa6e6"
+					},
+					"area": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"example": "13.384515254873506, 52.45866944694083",
+							"description": "In the format of lng, lat"
+						}
+					},
+					"center": {
+						"type": "string",
+						"example": "13.384515254873506, 52.45866944694083",
+						"description": "In the format of lng, lat",
+						"nullable": true
+					},
+					"size": {
+						"type": "number",
+						"example": 673
+					},
+					"buildings": {
+						"type": "number",
+						"example": 2
+					},
+					"active": {
+						"type": "boolean",
+						"example": true
+					},
+					"finished": {
+						"type": "boolean",
+						"example": true
+					},
+					"name": {
+						"type": "string",
+						"example": "Balinger Straße 19"
+					},
+					"description": {
+						"type": "string",
+						"example": "beautiful building i built here"
+					},
+					"city": {
+						"type": "string",
+						"example": "Rosenfeld"
+					},
+					"osmName": {
+						"type": "string",
+						"example": "19, Balinger Straße, Isingen, Rosenfeld, Zollernalbkreis, Baden-Württemberg, 72348, Germany"
+					},
+					"buildTeamId": {
+						"type": "string",
+						"format": "uuid",
+						"example": "f9dd9244-e777-4d6e-83ec-d36b9effa6e6"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2024-01-03T13:51:00.539Z"
+					}
+				}
+			},
+			"Showcase": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"example": "cda8eee7-32eb-4abc-bfa0-15d550e15a2a"
+					},
+					"name": {
+						"type": "string",
+						"example": "Empire State Building"
+					},
+					"image": {
+						"type": "string",
+						"format": "url",
+						"example": "https://buildtheearth.net/uploads/284250477abdd47940acd1f2a5c8b4ac04a968de.png"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "timestamp",
+						"example": "2023-08-15T12:43:57.586Z"
+					},
+					"buildTeamId": {
+						"type": "string",
+						"format": "uuid",
+						"example": "b3b8c684-becd-4779-a3b3-ca81fef7b954"
+					}
+				}
+			},
+			"BuildTeamFull": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/BuildTeam"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"webhook": {
+								"type": "string",
+								"format": "url"
+							},
+							"token": {
+								"type": "string",
+								"format": "password"
+							}
+						}
+					}
+				]
+			},
+			"BuildTeam": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/BuildTeamMinimal"
+					},
+					{
+						"type": "object",
+						"properties": {
+							"socials": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/Social"
+								}
+							}
+						}
+					}
+				]
+			},
+			"FAQ": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"example": "cda8eee7-32eb-4abc-bfa0-15d550e15a2a"
+					},
+					"question": {
+						"type": "string",
+						"example": "Is this a question?"
+					},
+					"answer": {
+						"type": "string",
+						"example": "Yes it is!"
+					},
+					"links": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"Contact": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"example": "748342ba-cedd-4aaa-9f55-1cc3529b4a75"
+					},
+					"name": {
+						"type": "string",
+						"example": "No Leak"
+					},
+					"role": {
+						"type": "string",
+						"example": "CMO"
+					},
+					"discord": {
+						"type": "string",
+						"example": "noleak126"
+					},
+					"email": {
+						"type": "string",
+						"format": "email",
+						"example": "noleak@buildtheearth.net"
+					},
+					"avatar": {
+						"type": "string",
+						"format": "url",
+						"example": "https://cdn.discordapp.com/attachments/705934480908746834/895140092090400818/admin-shield-vector.png"
+					}
+				}
+			},
+			"ApplicationQuestion": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"example": "307fd0c5-4af1-4e60-9232-a1a1d57fc65c"
+					},
+					"title": {
+						"type": "string",
+						"example": "What is your minecraft username?"
+					},
+					"subtitle": {
+						"type": "string",
+						"example": ""
+					},
+					"icon": {
+						"type": "string",
+						"example": "signature",
+						"description": "Icon name from https://tabler-icons.io/"
+					},
+					"additionalData": {
+						"type": "object",
+						"description": "Please see external documentation"
+					},
+					"buildTeamId": {
+						"type": "string",
+						"format": "uuid",
+						"example": "374b0e08-9ef5-4d1c-9a5c-3dc204d9fd96"
+					},
+					"placeholder": {
+						"type": "string",
+						"example": ""
+					},
+					"required": {
+						"type": "boolean",
+						"example": true
+					},
+					"type": {
+						"type": "string",
+						"example": "MINECRAFT"
+					},
+					"sort": {
+						"type": "number",
+						"example": 0
+					},
+					"trial": {
+						"type": "boolean",
+						"example": true
+					}
+				}
+			},
+			"UserRef": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"ssoId": {
+						"type": "string",
+						"format": "uuid"
+					},
+					"discordId": {
+						"type": "string"
+					},
+					"minecraft": {
+						"type": "string",
+						"description": "Linked Minecraft username of the user"
+					},
+					"username": {
+						"type": "string",
+						"description": "Website username of the user"
+					}
+				}
+			}
+		}
+	}
+}
